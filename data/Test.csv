@@ -1,0 +1,7 @@
+Date de comptabilisation;Libelle simplifie;Libelle operation;Reference;Informations complementaires;Type operation;Categorie;Sous categorie;Debit;Credit;Date operation;Date de valeur;Pointage operation
+01/01/2024;Walmart;Walmart New York;ABCDEFG;123456 CC****1234-;Credit card;Alimentation;Hyper/supermarche;-38,04;;01/01/2024;01/01/2024;0
+02/01/2024;Mc Donald's;Mc Donald's New York;ABCDEFG;123456 CC****1234-;Credit card;Alimentation;Restauration rapide;-10,50;;02/01/2024;01/01/2024;0
+03/01/2024;HSBC;HSBC New York;ABCDEFG;123456 CC****1234-;Credit card;Banque et assurances;Banque et assurances;-1,50;;03/01/2024;03/01/2024;0
+04/01/2024;Nike;Nike New York;ABCDEFG;123456 CC****1234-;Credit card;Shopping et services;Shopping et services;-70,45;;04/01/2024;04/01/2024;0
+05/01/2024;Uber;Uber New York;ABCDEFG;123456 CC****1234-;Credit card;Transports;Transports;-8,20;;05/01/2024;05/01/2024;0
+06/01/2024;HSBC;HSBC New York;ABCDEFG;123456 CC****1234-;Credit card;A categoriser - sortie d'argent;A categoriser - sortie d'argent;-50;;06/01/2024;06/01/2024;0
