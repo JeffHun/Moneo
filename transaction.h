@@ -7,7 +7,7 @@
 class Transaction
 {
 public:
-    Transaction(const QDate& aDate, const QString& aDesc, double aAmount, const QString& aCategory);
+    Transaction(const QDate& aDate = QDate(), const QString& aDesc = "", double aAmount = 0.0, const QString& aCategory = "");
 
     QDate getDate() const;
     QString getDescription() const;
