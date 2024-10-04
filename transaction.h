@@ -10,15 +10,27 @@ public:
     Transaction(const QDate& aDate = QDate(), const QString& aDesc = "", double aAmount = 0.0, const QString& aCategory = "");
 
     QDate getDate() const;
+    void setDate(const QDate& aDate);
+
     QString getDescription() const;
+    void setDescription(const QString& aDesc);
+
     double getAmount() const;
+    void setAmount(const double aAmount);
+
     QString getCategory() const;
+    void setCategory(const QString& aCategory);
+
+    static QStringList getAllowedCategories();
+
+    static QString convertFRtoENCategories(const QString& FRcategory);
 
 private:
     QDate date;
     QString description;
     double amount;
     QString category;
+    static QStringList allowedCategories;
 };
 
 QList<Transaction> transactionGenerator(const QString& filePath);

@@ -1,32 +1,56 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "transaction.h"
 
-#include <QPushButton>
-#include <QMessageBox>
+#include <QTableView>
+#include <QVBoxLayout>
+#include <QWidget>
+#include <QHeaderView>
+#include <QDir>
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow), model(new FinanceModel(this)), controller(new FinanceController(model, this))
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), tableView(new QTableView(this)), model(new TransactionModel(this)), delegate(new TransactionDelegate(this))
 {
-    ui->setupUi(this);
+    // UI configuration
+    QWidget* central = new QWidget(this);
+    setCentralWidget(central);
+    QVBoxLayout* layout = new QVBoxLayout(central);
+    layout->addWidget(tableView);
 
-    ui->tableViewTransactions->setModel(model);
+    // View configuration
+    tableView->setModel(model);
+    tableView->setItemDelegate(delegate);
+    tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    tableView->setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked);
 
-    connect(ui->btnAddTransaction, &QPushButton::clicked, this, [this]() {
-        Transaction t(QDate::currentDate(), "Salary", 3000.0, "Income");
-        controller->addTransaction(t);
-    });
+    // Delete signal connexion
+    connect(delegate, &TransactionDelegate::deleteClicked, this, &MainWindow::handleDelete);
 
-    connect(ui->btnRemoveTransaction, &QPushButton::clicked, this, [this]() {
-        QModelIndex currentIndex = ui->tableViewTransactions->currentIndex();
-        if (currentIndex.isValid()) {
-            controller->removeTransaction(currentIndex.row());
-        } else {
-            QMessageBox::warning(this, "Suppression", "Please select a transaction to delete.");
+    // Generate transactions from file
+    QString filePath = QDir::current().filePath("../Moneo/data/Test.csv");
+    QList<Transaction> transactions = transactionGenerator(filePath);
+
+    // Add all transactions to model
+    for (Transaction& t : transactions){model->addTransaction(Transaction(t));}
+
+    // Test to verify the modification
+    QPushButton* btnTest = new QPushButton(central);
+    btnTest->setText("Test");
+    connect(btnTest, &QPushButton::clicked, [this]() {
+        QVector<Transaction> currentTransactions = model->getTransactions();
+        for (const Transaction& t : currentTransactions) {
+            qDebug() << "Date:" << t.getDate().day() << "/" << t.getDate().month() << "/" << t.getDate().year() << " | "
+                     << "Description:" << t.getDescription() << " | "
+                     << "Amount:" << t.getAmount() << " | "
+                     << "Catégory:" << t.getCategory() << "\n";
         }
     });
+
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+}
+
+void MainWindow::handleDelete(int row)
+{
+    model->removeTransaction(row);
 }

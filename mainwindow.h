@@ -2,14 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "financemodel.h"
-#include "financecontroller.h"
+#include "transactionmodel.h"
+#include "transactiondelegate.h"
 
-QT_BEGIN_NAMESPACE
-namespace Ui {
-class MainWindow;
-}
-QT_END_NAMESPACE
+class QTableView;
 
 class MainWindow : public QMainWindow
 {
@@ -19,9 +15,13 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+private slots:
+    void handleDelete(int row);
+
 private:
-    Ui::MainWindow *ui;
-    FinanceModel* model;
-    FinanceController* controller;
+    QTableView* tableView;
+    TransactionModel* model;
+    TransactionDelegate* delegate;
 };
+
 #endif // MAINWINDOW_H

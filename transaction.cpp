@@ -3,12 +3,29 @@
 Transaction::Transaction(const QDate& aDate, const QString& aDesc, double aAmount, const QString& aCategory)
     : date(aDate), description(aDesc), amount(aAmount), category(aCategory) {}
 
-
 const QString DATE_COLUMN = "Date de comptabilisation";
 const QString DESCRIPTION_COLUMN = "Libelle operation";
 const QString CATEGORY_COLUMN = "Categorie";
 const QString DEBIT_COLUMN = "Debit";
 const QString CREDIT_COLUMN = "Credit";
+
+QStringList Transaction::allowedCategories = {"Food",
+                                              "Bank and insurance",
+                                              "Education and Family",
+                                              "Taxes and duties",
+                                              "Legal and Administrative",
+                                              "Housing and home",
+                                              "Leisure and vacations",
+                                              "Health",
+                                              "Shopping and services",
+                                              "Excluded and transaction",
+                                              "Transports",
+                                              "Outflow of money",
+                                              "Saving",
+                                              "Income and earnings",
+                                              "Inflow of money",
+                                              "Refund",
+                                              "Other"};
 
 QList<Transaction> transactionGenerator(const QString& filePath) {
     QList<Transaction> transactions;
@@ -83,6 +100,8 @@ QList<Transaction> transactionGenerator(const QString& filePath) {
         }
 
         QString category = items[columnIndices[CATEGORY_COLUMN]];
+        category = Transaction::convertFRtoENCategories(category);
+
         // Check if category is a valid value
         if (category.isEmpty()) {
             qWarning() << "Empty category in file : " << filePath << " on the line : " << lineNbr;
@@ -97,22 +116,39 @@ QList<Transaction> transactionGenerator(const QString& filePath) {
     return transactions;
 }
 
-QDate Transaction::getDate() const
+QString Transaction::convertFRtoENCategories(const QString& FRcategory)
 {
-    return date;
+    static const QMap<QString, QString> categoryMap = {
+        {"Alimentation", "Food"},
+        {"Banque et assurances", "Bank and insurance"},
+        {"Education et famille", "Education and family"},
+        {"Epargne", "Saving"},
+        {"Impots et taxes", "Taxes and duties"},
+        {"Juridique et administratif", "Legal and administrative"},
+        {"Logement - maison", "Housing and home"},
+        {"Loisirs et vacances", "Leisure and vacations"},
+        {"Revenus et rentrees d'argent", "Income and earnings"},
+        {"Sante", "Health"},
+        {"Shopping et services", "Shopping and services"},
+        {"Transaction exclue", "Excluded and transaction"},
+        {"Transports", "Transports"},
+        {"A categoriser - sortie d'argent", "Outflow of money"},
+        {"A categoriser - rentree d'argent", "Inflow of money"}
+    };
+
+    return categoryMap.value(FRcategory, "Other");
 }
 
-QString Transaction::getDescription() const
-{
-    return description;
-}
+QDate Transaction::getDate() const {return date;}
+void Transaction::setDate(const QDate& aDate) {date = aDate;}
 
-double Transaction::getAmount() const
-{
-    return amount;
-}
+QString Transaction::getDescription() const {return description;}
+void Transaction::setDescription(const QString& aDesc) {description = aDesc;}
 
-QString Transaction::getCategory() const
-{
-    return category;
-}
+double Transaction::getAmount() const {return amount;}
+void Transaction::setAmount(double aAmount) {amount = aAmount;}
+
+QString Transaction::getCategory() const {return category;}
+void Transaction::setCategory(const QString& aCategory) {category = aCategory;}
+
+QStringList Transaction::getAllowedCategories() {return allowedCategories;}
