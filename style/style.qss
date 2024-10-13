@@ -1,0 +1,53 @@
+#central {
+    background-color: #15131B;
+}
+
+#bigTitle {
+    color: #D9D9D9;
+    font-family: Roboto Black;
+    font-size: 50px;
+}
+
+#title {
+    color: #D9D9D9;
+    font-family: Roboto Medium;
+    font-size: 30px;
+}
+
+#text {
+    color: #D9D9D9;
+    font-family: Roboto Regular;
+    font-size: 12px;
+}
+
+#smallText {
+    color: #D9D9D9;
+    font-family: Roboto Thin;
+    font-size: 12px;
+}
+
+QPushButton, QPushButton[active="false"]{
+    color: #D9D9D9;
+    font-family: Roboto Regular;
+    font-size: 12px;
+    background-color: #3D3558;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+QPushButton:hover{
+    background-color: #4C3B88;
+}
+
+#inactiveBtn{
+    background-color: #241E38;
+}
+
+QPushButton[active="true"] {
+    background-color: #6954D7;
+    color: #D9D9D9;
+    font-family: Roboto Regular;
+    font-size: 12px;
+    padding: 10px;
+    border-radius: 10px;
+}

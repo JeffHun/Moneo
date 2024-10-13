@@ -1,0 +1,24 @@
+<RCC>
+    <qresource prefix="/resources">
+        <file>style/img/food.png</file>
+        <file>style/img/bank.png</file>
+        <file>style/img/education.png</file>
+        <file>style/img/health.png</file>
+        <file>style/img/housing.png</file>
+        <file>style/img/legal.png</file>
+        <file>style/img/leisure.png</file>
+        <file>style/img/other.png</file>
+        <file>style/img/outflow.png</file>
+        <file>style/img/shopping.png</file>
+        <file>style/img/taxes.png</file>
+        <file>style/img/transport.png</file>
+        <file>style/img/excluded.png</file>
+        <file>style/img/saving.png</file>
+        <file>style/img/narrow.png</file>
+        <file>style/img/arrow.png</file>
+        <file>style/img/egal.png</file>
+        <file>style/img/inflow.png</file>
+        <file>style/img/income.png</file>
+        <file>style/img/refund.png</file>
+    </qresource>
+</RCC>

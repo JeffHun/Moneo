@@ -6,6 +6,9 @@
 #include <QComboBox>
 #include <QDateEdit>
 #include <QStyleOptionButton>
+#include <QPainterPath>
+#include <QFont>
+#include <iostream>
 
 TransactionDelegate::TransactionDelegate(QObject* parent)
     : QStyledItemDelegate(parent)
@@ -77,12 +80,21 @@ void TransactionDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
 {
     if (index.column() == 4) // Delete btn
     {
-        QStyleOptionButton buttonOption;
-        buttonOption.rect = option.rect.adjusted(4, 4, -4, -4);
-        buttonOption.text = "Delete";
-        buttonOption.state = QStyle::State_Enabled;
+        QStyleOptionButton deleteBtn;
+        deleteBtn.rect = option.rect.adjusted(4, 4, -4, -4);
+        deleteBtn.text = "Delete";
+        deleteBtn.palette.setColor(QPalette::Button, QColor("#6954D7"));
+        deleteBtn.palette.setColor(QPalette::ButtonText, QColor("#D9D9D9"));
 
-        QApplication::style()->drawControl(QStyle::CE_PushButton, &buttonOption, painter);
+        // Style
+        QPainterPath path;
+        path.addRoundedRect(deleteBtn.rect, 10, 10);
+        painter->fillPath(path, deleteBtn.palette.button());
+        QFont font("Roboto", 10, QFont::Bold);
+        painter->setFont(font);
+        painter->setPen(deleteBtn.palette.buttonText().color());
+
+        painter->drawText(deleteBtn.rect, Qt::AlignCenter, deleteBtn.text);
     }
     else
     {

@@ -13,44 +13,7 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QWidget" name="centralwidget">
-   <widget class="QTableView" name="tableViewTransactions">
-    <property name="geometry">
-     <rect>
-      <x>200</x>
-      <y>160</y>
-      <width>256</width>
-      <height>192</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btnAddTransaction">
-    <property name="geometry">
-     <rect>
-      <x>470</x>
-      <y>170</y>
-      <width>121</width>
-      <height>24</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Add transaction</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btnRemoveTransaction">
-    <property name="geometry">
-     <rect>
-      <x>470</x>
-      <y>210</y>
-      <width>121</width>
-      <height>24</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Remove transaction</string>
-    </property>
-   </widget>
-  </widget>
+  <widget class="QWidget" name="centralwidget"/>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
