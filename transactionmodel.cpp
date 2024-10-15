@@ -7,7 +7,7 @@ TransactionModel::TransactionModel(QObject* parent)
 
 int TransactionModel::rowCount(const QModelIndex & /*parent*/) const
 {
-    return transactions.size();
+    return m_transactions.size();
 }
 
 int TransactionModel::columnCount(const QModelIndex & /*parent*/) const
@@ -21,10 +21,10 @@ QVariant TransactionModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
 
-    if (index.row() >= transactions.size() || index.row() < 0)
+    if (index.row() >= m_transactions.size() || index.row() < 0)
         return QVariant();
 
-    const Transaction &transaction = transactions.at(index.row());
+    const Transaction &transaction = m_transactions.at(index.row());
 
     if (role == Qt::DisplayRole || role == Qt::EditRole)
     {
@@ -78,7 +78,7 @@ bool TransactionModel::setData(const QModelIndex &index, const QVariant &value, 
 {
     if (index.isValid() && role == Qt::EditRole)
     {
-        Transaction &transaction = transactions[index.row()];
+        Transaction &transaction = m_transactions[index.row()];
 
         switch (index.column())
         {
@@ -127,29 +127,29 @@ Qt::ItemFlags TransactionModel::flags(const QModelIndex &index) const
 
 void TransactionModel::addTransaction(const Transaction& transaction)
 {
-    beginInsertRows(QModelIndex(), transactions.size(), transactions.size());
-    transactions.append(transaction);
+    beginInsertRows(QModelIndex(), m_transactions.size(), m_transactions.size());
+    m_transactions.append(transaction);
     endInsertRows();
 }
 
 void TransactionModel::removeTransaction(int row)
 {
-    if (row < 0 || row >= transactions.size())
+    if (row < 0 || row >= m_transactions.size())
         return;
 
     beginRemoveRows(QModelIndex(), row, row);
-    transactions.removeAt(row);
+    m_transactions.removeAt(row);
     endRemoveRows();
 }
 
 Transaction TransactionModel::getTransaction(int row) const
 {
-    if (row < 0 || row >= transactions.size())
+    if (row < 0 || row >= m_transactions.size())
         return Transaction();
 
-    return transactions.at(row);
+    return m_transactions.at(row);
 }
 
 QVector<Transaction> TransactionModel::getTransactions() const {
-    return transactions;
+    return m_transactions;
 }

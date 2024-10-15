@@ -27,7 +27,7 @@ public:
     QVector<Transaction> getTransactions() const;
 
 private:
-    QVector<Transaction> transactions;
+    QVector<Transaction> m_transactions;
 };
 
 #endif // TRANSACTIONMODEL_H

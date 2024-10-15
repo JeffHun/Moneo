@@ -1,7 +1,7 @@
 #include "transaction.h"
 
 Transaction::Transaction(const QDate& aDate, const QString& aDesc, double aAmount, const QString& aCategory)
-    : date(aDate), description(aDesc), amount(aAmount), category(aCategory) {}
+    : m_date(aDate), m_description(aDesc), m_amount(aAmount), m_category(aCategory) {}
 
 const QString DATE_COLUMN = "Date de comptabilisation";
 const QString DESCRIPTION_COLUMN = "Libelle operation";
@@ -9,7 +9,7 @@ const QString CATEGORY_COLUMN = "Categorie";
 const QString DEBIT_COLUMN = "Debit";
 const QString CREDIT_COLUMN = "Credit";
 
-QStringList Transaction::allowedCategories = {"Food",
+QStringList Transaction::m_allowedCategories = {"Food",
                                               "Bank and insurance",
                                               "Education and Family",
                                               "Taxes and duties",
@@ -139,16 +139,16 @@ QString Transaction::convertFRtoENCategories(const QString& FRcategory)
     return categoryMap.value(FRcategory, "Other");
 }
 
-QDate Transaction::getDate() const {return date;}
-void Transaction::setDate(const QDate& aDate) {date = aDate;}
+QDate Transaction::getDate() const {return m_date;}
+void Transaction::setDate(const QDate& aDate) {m_date = aDate;}
 
-QString Transaction::getDescription() const {return description;}
-void Transaction::setDescription(const QString& aDesc) {description = aDesc;}
+QString Transaction::getDescription() const {return m_description;}
+void Transaction::setDescription(const QString& aDesc) {m_description = aDesc;}
 
-double Transaction::getAmount() const {return amount;}
-void Transaction::setAmount(double aAmount) {amount = aAmount;}
+double Transaction::getAmount() const {return m_amount;}
+void Transaction::setAmount(double aAmount) {m_amount = aAmount;}
 
-QString Transaction::getCategory() const {return category;}
-void Transaction::setCategory(const QString& aCategory) {category = aCategory;}
+QString Transaction::getCategory() const {return m_category;}
+void Transaction::setCategory(const QString& aCategory) {m_category = aCategory;}
 
-QStringList Transaction::getAllowedCategories() {return allowedCategories;}
+QStringList Transaction::getAllowedCategories() {return m_allowedCategories;}

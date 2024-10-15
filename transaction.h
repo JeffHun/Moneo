@@ -26,11 +26,11 @@ public:
     static QString convertFRtoENCategories(const QString& FRcategory);
 
 private:
-    QDate date;
-    QString description;
-    double amount;
-    QString category;
-    static QStringList allowedCategories;
+    QDate m_date;
+    QString m_description;
+    double m_amount;
+    QString m_category;
+    static QStringList m_allowedCategories;
 };
 
 QList<Transaction> transactionGenerator(const QString& filePath);

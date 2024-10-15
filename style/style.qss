@@ -1,5 +1,7 @@
 #central {
     background-color: #15131B;
+    padding: 0;
+    margin: 0;
 }
 
 #bigTitle {
@@ -50,4 +52,19 @@ QPushButton[active="true"] {
     font-size: 12px;
     padding: 10px;
     border-radius: 10px;
+}
+
+#menu{
+    background-color: #241E38;
+    max-width: 150px;
+}
+
+#menuBtn{
+    text-align: left;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+#logo{
+    margin: 35px;
 }

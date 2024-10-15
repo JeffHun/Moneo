@@ -20,5 +20,11 @@
         <file>style/img/inflow.png</file>
         <file>style/img/income.png</file>
         <file>style/img/refund.png</file>
+        <file>style/img/logo.png</file>
+        <file>style/img/transaction.png</file>
+        <file>style/img/budget.png</file>
+        <file>style/img/analysis.png</file>
+        <file>style/img/setting.png</file>
+        <file>style/style.qss</file>
     </qresource>
 </RCC>
