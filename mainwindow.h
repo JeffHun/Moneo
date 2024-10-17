@@ -2,11 +2,11 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "transactionmodel.h"
-#include "transactiondelegate.h"
+#include <QPushButton>
 #include <QVBoxLayout>
 #include <QScreen>
 #include <QGuiApplication>
+#include <QStackedWidget>
 
 class QTableView;
 
@@ -18,17 +18,9 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-private slots:
-    void handleDelete(int row);
-
 private:
-    QTableView* m_tableView;
-    TransactionModel* m_model;
-    TransactionDelegate* m_delegate;
-    QList<QPushButton*> m_menuButtons;
     QPushButton* m_menuActiveButton;
-    QVBoxLayout* m_contentLayout;
-    QWidget* m_content;
+    QStackedWidget* m_stack;
 
     void loadContent(QPushButton*);
     void setButtonState(QPushButton*, bool);

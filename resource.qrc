@@ -26,5 +26,8 @@
         <file>style/img/analysis.png</file>
         <file>style/img/setting.png</file>
         <file>style/style.qss</file>
+        <file>style/img/transactionIllustration.png</file>
+        <file>style/img/budgetIllustration.png</file>
+        <file>style/img/analyticsIllustration.png</file>
     </qresource>
 </RCC>

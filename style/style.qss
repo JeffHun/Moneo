@@ -19,13 +19,13 @@
 #text {
     color: #D9D9D9;
     font-family: Roboto Regular;
-    font-size: 12px;
+    font-size: 15px;
 }
 
 #smallText {
     color: #D9D9D9;
-    font-family: Roboto Thin;
-    font-size: 12px;
+    font-family: Roboto Light;
+    font-size: 10px;
 }
 
 QPushButton, QPushButton[active="false"]{
