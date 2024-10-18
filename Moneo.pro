@@ -11,6 +11,7 @@ CONFIG += c++17
 SOURCES += \
     analysispage.cpp \
     budgetpage.cpp \
+    filedropzone.cpp \
     main.cpp \
     mainwindow.cpp \
     settingspage.cpp \
@@ -23,6 +24,7 @@ SOURCES += \
 HEADERS += \
     analysispage.h \
     budgetpage.h \
+    filedropzone.h \
     mainwindow.h \
     settingspage.h \
     transaction.h \

@@ -8,6 +8,7 @@
 
 #include "transactionmodel.h"
 #include "transactiondelegate.h"
+#include "fileDropZone.h"
 
 
 class TransactionsPage: public QWidget{
@@ -23,6 +24,7 @@ private:
     QTableView* m_tableView;
     TransactionModel* m_model;
     TransactionDelegate* m_delegate;
+    void createTransactionsMVC(QVBoxLayout* layout);
 };
 
 #endif // TRANSACTIONSPAGE_H

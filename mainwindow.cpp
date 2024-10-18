@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), m_menuActiveButto
 {
     moveToPrimaryScreen();
     uiSetUp();
-    loadWelcomeContent();
+    loadTransactionsContent();
 }
 
 void MainWindow::uiSetUp()

@@ -2,12 +2,24 @@
 
 #include <QDir>
 
-TransactionsPage::TransactionsPage(QWidget *parent) : QWidget(parent), m_tableView(new QTableView(this)), m_model(new TransactionModel(this)), m_delegate(new TransactionDelegate(this))
+TransactionsPage::TransactionsPage(QWidget *parent) : QWidget(parent)
 {
     QLabel* title = new QLabel("Transactions", this);
-    title->setObjectName("title");
+    title->setObjectName("bigTitle");
+    title->setAlignment(Qt::AlignCenter);
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->addWidget(title);
+    FileDropZone* dropZone = new FileDropZone(this);
+    layout->addWidget(dropZone, 0, Qt::AlignCenter);
+
+    //createTransactionsMVC(layout);
+}
+
+void TransactionsPage::createTransactionsMVC(QVBoxLayout* layout)
+{
+    m_tableView = new QTableView(this);
+    m_model = new TransactionModel(this);
+    m_delegate = new TransactionDelegate(this);
 
     layout->addWidget(m_tableView);
 
