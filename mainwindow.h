@@ -37,7 +37,4 @@ private:
     void deleteContentChildren();
 };
 
-void setupInteractiveButton(QPushButton*);
-void setupToggleButton(QPushButton*);
-
 #endif // MAINWINDOW_H

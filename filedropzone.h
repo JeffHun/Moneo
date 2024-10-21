@@ -16,6 +16,8 @@ class FileDropZone : public QWidget{
 
 public:
     FileDropZone(QWidget* parent = nullptr);
+    QList<QFile*> getFiles();
+    ~FileDropZone();
 
 protected:
     void dragEnterEvent(QDragEnterEvent* event) override;
@@ -23,12 +25,13 @@ protected:
     void dropEvent(QDropEvent* event) override;
 
 private:
-    QWidget* dropContainer;
+    QWidget* m_dropContainer;
+    QList<QFile*> m_files;
+    QWidget* m_scrollContent;
+    QVBoxLayout* m_scrollLayout;
+    QWidget* fileContainer;
+
     void addFile(QFile* aFile);
-    QList<QFile*> files;
-    int nbrFile;
-    QWidget* scrollContent;
-    QVBoxLayout *scrollLayout;
     void browseFile();
     bool isAllFilesAreCSV(const QList<QUrl> &urls) const;
     void updateDropContainerStyle();

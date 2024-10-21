@@ -1,4 +1,5 @@
 #include "transaction.h"
+#include <QMessageBox>
 
 Transaction::Transaction(const QDate& aDate, const QString& aDesc, double aAmount, const QString& aCategory)
     : m_date(aDate), m_description(aDesc), m_amount(aAmount), m_category(aCategory) {}
@@ -28,17 +29,20 @@ QStringList Transaction::m_allowedCategories = {"Food",
                                               "Other"};
 
 QList<Transaction> transactionGenerator(const QString& filePath) {
+    QMessageBox messageBox;
+    messageBox.setFixedSize(500,200);
+
     QList<Transaction> transactions;
 
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning() << "Impossible to open the file :" << filePath;
+        messageBox.critical(0,"Error", "Impossible to open the file : " + filePath);
         return transactions;
     }
 
     QTextStream in(&file);
 
-    // Strore each headers values separated by ';'
+    // Store each headers values separated by ';'
     QStringList headers  = in.readLine().split(';');
 
     // Initialize a map to store column indices
@@ -55,7 +59,8 @@ QList<Transaction> transactionGenerator(const QString& filePath) {
         !columnIndices.contains(CATEGORY_COLUMN) ||
         !columnIndices.contains(DEBIT_COLUMN) ||
         !columnIndices.contains(CREDIT_COLUMN)) {
-        qWarning() << "Required columns are missing in the file:" << filePath;
+
+        messageBox.critical(0,"Error", "Required columns are missing in the file: " + filePath);
         return transactions;
     }
 
@@ -69,7 +74,7 @@ QList<Transaction> transactionGenerator(const QString& filePath) {
         QStringList items = in.readLine().split(';');
 
         if (items.size() < headers.size()) {
-            qWarning() << "Line" << lineNbr << "has an incorrect number of columns.";
+            messageBox.critical(0,"Error", "File " + filePath + " line " + QChar(lineNbr) + " has an incrorrect number of columns");
             continue;
         }
 
@@ -78,14 +83,14 @@ QList<Transaction> transactionGenerator(const QString& filePath) {
         QDate date = QDate::fromString(items[columnIndices[DATE_COLUMN]], "dd/MM/yyyy");
         // Check if date is a valid value
         if (!date.isValid()) {
-            qWarning() << "Invalid date in the file : " << filePath << " on the line : " << lineNbr;
+            messageBox.critical(0,"Error", "Invalid date in the file : " + filePath + " on the line : " + QChar(lineNbr));
             continue;
         }
 
         QString description = items[columnIndices[DESCRIPTION_COLUMN]];
         // Check if description is a valid value
         if (description.isEmpty()) {
-            qWarning() << "Empty description in the file : " << filePath << " on the line : " << lineNbr;
+            messageBox.critical(0,"Error", "Empty description in the file : " + filePath + " on the line : " + QChar(lineNbr));
             continue;
         }
 
@@ -95,7 +100,7 @@ QList<Transaction> transactionGenerator(const QString& filePath) {
                             items[columnIndices[DEBIT_COLUMN]].replace(",", ".").toDouble();
         if(amount == 0)
         {
-            qWarning() << "Invalid amount in the file : " << filePath << " on the line : " << lineNbr;
+            messageBox.critical(0,"Error", "Invalid amount in the file : " + filePath + " on the line : " + QChar(lineNbr));
             continue;
         }
 
@@ -104,7 +109,7 @@ QList<Transaction> transactionGenerator(const QString& filePath) {
 
         // Check if category is a valid value
         if (category.isEmpty()) {
-            qWarning() << "Empty category in file : " << filePath << " on the line : " << lineNbr;
+            messageBox.critical(0,"Error", "Empty category in file : " + filePath + " on the line : " + QChar(lineNbr));
             continue;
         }
 

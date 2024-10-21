@@ -166,32 +166,6 @@ void MainWindow::moveToPrimaryScreen() {
     }
 }
 
-void setupInteractiveButton(QPushButton* button) {
-    MainWindow::connect(button, &QPushButton::pressed, [button]() {
-        button->setProperty("active", true);
-        button->style()->unpolish(button);
-        button->style()->polish(button);
-        button->update();
-    });
-
-    MainWindow::connect(button, &QPushButton::released, [button]() {
-        button->setProperty("active", false);
-        button->style()->unpolish(button);
-        button->style()->polish(button);
-        button->update();
-    });
-}
-
-void setupToggleButton(QPushButton* button) {
-    MainWindow::connect(button, &QPushButton::clicked, [button]() {
-        bool isActive = button->property("active").toBool();
-        button->setProperty("active", !isActive);
-        button->style()->unpolish(button);
-        button->style()->polish(button);
-        button->update();
-    });
-}
-
 MainWindow::~MainWindow()
 {
 }

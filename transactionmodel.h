@@ -26,6 +26,10 @@ public:
     Transaction getTransaction(int row) const;
     QVector<Transaction> getTransactions() const;
 
+    void resetTransactions();
+
+    void clear();
+
 private:
     QVector<Transaction> m_transactions;
 };

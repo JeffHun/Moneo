@@ -24,7 +24,11 @@ private:
     QTableView* m_tableView;
     TransactionModel* m_model;
     TransactionDelegate* m_delegate;
-    void createTransactionsMVC(QVBoxLayout* layout);
+    void createTransactionsMVC(QList<QFile*> files);
+    void resetModel();
+
+    void setupUI();
+    void setupTableView();
 };
 
 #endif // TRANSACTIONSPAGE_H

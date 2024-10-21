@@ -1,53 +1,61 @@
 #include "filedropzone.h"
+#include "buttonutility.h"
 #include <QStyle>
 #include <QPushButton>
 #include <QFileDialog>
+#include <QMessageBox>
 
 FileDropZone::FileDropZone(QWidget* parent) : QWidget(parent) {
     setAcceptDrops(true);
     setFixedWidth(550);
     setFixedHeight(200);
 
-    dropContainer = new QWidget(this);
-    dropContainer->setObjectName("dropContainer");
-    dropContainer->setProperty("isHovered", false);
-    QLabel *label = new QLabel("Drag and drop files here", dropContainer);
+    m_dropContainer = new QWidget(this);
+    m_dropContainer->setObjectName("dropContainer");
+    m_dropContainer->setProperty("isHovered", false);
+    QLabel *label = new QLabel("Drag and drop files here", m_dropContainer);
     label->setAlignment(Qt::AlignCenter);
     label->setObjectName("text");
-    QPushButton* browseFileBtn = new QPushButton("Browse file", dropContainer);
+    QPushButton* browseFileBtn = new QPushButton("Browse file", m_dropContainer);
+    ButtonUtility::connectButton(browseFileBtn);
     connect(browseFileBtn, &QPushButton::clicked, this, &FileDropZone::browseFile);
-    QVBoxLayout *dropLayout = new QVBoxLayout(dropContainer);
+    QVBoxLayout *dropLayout = new QVBoxLayout(m_dropContainer);
+    dropLayout->addStretch();
     dropLayout->addWidget(label);
+    dropLayout->addStretch();
     dropLayout->addWidget(browseFileBtn);
+    dropLayout->addStretch();
 
-    QWidget* fileContainer = new QWidget(this);
+    fileContainer = new QWidget(this);
     QVBoxLayout *fileLayout = new QVBoxLayout(fileContainer);
 
     QScrollArea* scrollArea = new QScrollArea(fileContainer);
     scrollArea->setWidgetResizable(true);
     scrollArea->setObjectName("scrollArea");
 
-    scrollContent = new QWidget(scrollArea);
-    scrollContent->setObjectName("scrollContent");
-    scrollLayout = new QVBoxLayout(scrollContent);
+    m_scrollContent = new QWidget(scrollArea);
+    m_scrollContent->setObjectName("scrollContent");
+    m_scrollLayout = new QVBoxLayout(m_scrollContent);
 
-    scrollArea->setWidget(scrollContent);
+    scrollArea->setWidget(m_scrollContent);
 
     fileLayout->addWidget(scrollArea);
 
     QHBoxLayout *layout = new QHBoxLayout(this);
-    layout->addWidget(dropContainer);
+    layout->addWidget(m_dropContainer);
     layout->addWidget(fileContainer);
     layout->setContentsMargins(0, 0, 0, 0);
+
+    fileContainer->hide();
 }
 
 
 void FileDropZone::dragEnterEvent(QDragEnterEvent* event){
     if (event->mimeData()->hasUrls() && isAllFilesAreCSV(event->mimeData()->urls())){
         event->acceptProposedAction();
-        dropContainer->setProperty("isHovered", true);
-        dropContainer->style()->unpolish(dropContainer);
-        dropContainer->style()->polish(dropContainer);
+        m_dropContainer->setProperty("isHovered", true);
+        m_dropContainer->style()->unpolish(m_dropContainer);
+        m_dropContainer->style()->polish(m_dropContainer);
         update();
     }else {
         event->ignore();
@@ -55,7 +63,7 @@ void FileDropZone::dragEnterEvent(QDragEnterEvent* event){
 }
 
 void FileDropZone::dragLeaveEvent(QDragLeaveEvent* event){
-    dropContainer->setProperty("isHovered", false);
+    m_dropContainer->setProperty("isHovered", false);
     updateDropContainerStyle();
 }
 
@@ -67,7 +75,7 @@ void FileDropZone::dropEvent(QDropEvent* event){
             qDebug()<< filePath;
             QFile* aFile = new QFile(filePath);
             addFile(aFile);
-            dropContainer->setProperty("isHovered", false);
+            m_dropContainer->setProperty("isHovered", false);
             updateDropContainerStyle();
         }
         event->acceptProposedAction();
@@ -75,8 +83,8 @@ void FileDropZone::dropEvent(QDropEvent* event){
 }
 
 void FileDropZone::updateDropContainerStyle() {
-    dropContainer->style()->unpolish(dropContainer);
-    dropContainer->style()->polish(dropContainer);
+    m_dropContainer->style()->unpolish(m_dropContainer);
+    m_dropContainer->style()->polish(m_dropContainer);
     update();
 }
 
@@ -103,55 +111,77 @@ void FileDropZone::browseFile()
 
 void FileDropZone::addFile(QFile* aFile)
 {
-    bool isNewFile = true;
+    fileContainer->show();
+
+    QMessageBox messageBox;
+    messageBox.setFixedSize(500,200);
+
+    // Check if file exist
+    if (!aFile->exists()) {
+        messageBox.critical(0,"Error", aFile->fileName() + " doesn't exist.");
+        delete aFile;
+        return;
+    }
 
     // Avoid duplicate file
-    foreach(QFile* file, files)
+    foreach(QFile* file, m_files)
     {
         if(file->fileName() == aFile->fileName())
-            isNewFile = false;
-    }
-
-    if(isNewFile)
-    {
-        nbrFile++;
-        QWidget *fileWidget = new QWidget(scrollContent);
-        fileWidget->setObjectName("fileWidget");
-        fileWidget->setFixedHeight(40);
-        QHBoxLayout *fileLayout = new QHBoxLayout(fileWidget);
-
-        // Button for removing file from files list
-        QPushButton *fileBtn = new QPushButton("X", fileWidget);
-        fileBtn->setFixedWidth(20);
-        fileBtn->setObjectName("fileButton");
-        connect(fileBtn, &QPushButton::clicked, this, [=]() {
-            delete fileWidget;
-            nbrFile--;
-
-            //remove the file from the list
-            int index = files.indexOf(aFile);
-            if (index != -1) {
-                delete files.takeAt(index);
-            }
-        });
-
-        //remove the extension from the file name and reduce the number of characters to 18
-        QString fileName = aFile->fileName().section('/', -1);
-        QLabel *fileLabel = new QLabel(fileName, fileWidget);
-        fileLabel->setObjectName("fileLabel");
-        for(int i = 0; i<fileLabel->text().length(); i++){
-            if(fileLabel->text()[i] == '.')
-            {
-                fileLabel->setText(fileLabel->text().left(i));
-                break;
-            }
+        {
+            messageBox.critical(0,"Warning", aFile->fileName() + " is not added because it already exists in the processing files list.");
+            delete aFile;
+            return;
         }
-        if (fileLabel->text().length() > 18)
-            fileLabel->setText(fileLabel->text().left(18));
-
-        fileLayout->addWidget(fileBtn);
-        fileLayout->addWidget(fileLabel);
-        scrollLayout->addWidget(fileWidget);
-        files.append(aFile);
     }
+    QWidget *fileWidget = new QWidget(m_scrollContent);
+    fileWidget->setObjectName("fileWidget");
+    fileWidget->setFixedHeight(40);
+    QHBoxLayout *fileLayout = new QHBoxLayout(fileWidget);
+
+    // Button for removing file from files list
+    QPushButton *fileBtn = new QPushButton("X", fileWidget);
+    fileBtn->setFixedWidth(20);
+    fileBtn->setObjectName("fileButton");
+    connect(fileBtn, &QPushButton::clicked, this, [this, fileWidget, aFile]() {
+        delete fileWidget;
+
+        //remove the file from the list
+        int index = m_files.indexOf(aFile);
+        if (index != -1)
+            delete m_files.takeAt(index);
+
+        if(m_files.empty())
+            fileContainer->hide();
+        else
+            fileContainer->show();
+    });
+
+    //remove the extension from the file name and reduce the number of characters to 18
+    QString fileName = aFile->fileName().section('/', -1);
+    QLabel *fileLabel = new QLabel(fileName, fileWidget);
+    fileLabel->setObjectName("fileLabel");
+    for(int i = 0; i<fileLabel->text().length(); i++){
+        if(fileLabel->text()[i] == '.')
+        {
+            fileLabel->setText(fileLabel->text().left(i));
+            break;
+        }
+    }
+    if (fileLabel->text().length() > 40)
+        fileLabel->setText(fileLabel->text().left(40));
+
+    fileLayout->addWidget(fileBtn);
+    fileLayout->addWidget(fileLabel);
+    m_scrollLayout->addWidget(fileWidget);
+    m_files.append(aFile);
+}
+
+QList<QFile*> FileDropZone::getFiles(){
+    return m_files;
+}
+
+FileDropZone::~FileDropZone()
+{
+    for(QFile* file: m_files)
+        delete file;
 }

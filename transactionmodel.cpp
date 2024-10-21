@@ -153,3 +153,15 @@ Transaction TransactionModel::getTransaction(int row) const
 QVector<Transaction> TransactionModel::getTransactions() const {
     return m_transactions;
 }
+
+void TransactionModel::clear()
+{
+    m_transactions.clear();
+}
+
+void TransactionModel::resetTransactions()
+{
+    beginResetModel();
+    m_transactions.clear();
+    endResetModel();
+}
