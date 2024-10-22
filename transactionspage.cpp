@@ -3,6 +3,7 @@
 
 #include <QDir>
 #include <QMessageBox>
+#include <QHeaderView>
 
 TransactionsPage::TransactionsPage(QWidget *parent) : QWidget(parent)
 {
@@ -37,6 +38,7 @@ void TransactionsPage::setupUI()
     layout->addWidget(proceedFilesBtn, 0, Qt::AlignCenter);
     ButtonUtility::connectButton(proceedFilesBtn);
 
+    // Hide or show view if there is data to process
     connect(proceedFilesBtn, &QPushButton::clicked, this, [this, dropZone]() {
         if(dropZone->getFiles().isEmpty())
         {
@@ -62,14 +64,33 @@ void TransactionsPage::setupTableView()
     m_delegate = new TransactionDelegate(this);
 
     QVBoxLayout* mainLayout = qobject_cast<QVBoxLayout*>(layout());
-    if (mainLayout)
-        mainLayout->addWidget(m_tableView);
+    QWidget* tableGraphWidget = new QWidget(this);
+    QHBoxLayout* tableGraphLayout = new QHBoxLayout(tableGraphWidget);
+    mainLayout->addStretch();
+    mainLayout->addWidget(tableGraphWidget, 0, Qt::AlignCenter);
+    mainLayout->addStretch();
+    tableGraphLayout->addWidget(m_tableView, 0, Qt::AlignCenter);
 
     // View configuration
     m_tableView->setModel(m_model);
     m_tableView->setItemDelegate(m_delegate);
     m_tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_tableView->setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked);
+
+    // Adjust size of table
+    m_tableView->resizeColumnsToContents();
+    m_tableView->resizeRowsToContents();
+    m_tableView->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+    m_tableView->horizontalHeader()->setStretchLastSection(true);
+
+    // Adjust size of columns
+    m_tableView->setColumnWidth(0, 100);
+    m_tableView->setColumnWidth(1, 200);
+    m_tableView->setColumnWidth(2, 75);
+    m_tableView->setColumnWidth(3, 200);
+    m_tableView->setColumnWidth(4, 100);
+    QHeaderView* header = m_tableView->horizontalHeader();
+    header->setMaximumSectionSize(250);
 
     // Delete signal connexion
     connect(m_delegate, &TransactionDelegate::deleteClicked, this, &TransactionsPage::handleDelete);
@@ -81,29 +102,39 @@ void TransactionsPage::createTransactionsMVC(QList<QFile*> files)
 {
     m_model->resetTransactions();
 
+    QList<Transaction> transactions;
+
     // Procces each file
     for(QFile* file: files)
     {
         // Generate transactions from file
         QString filePath = file->fileName();
-
-        QList<Transaction> transactions;
         try {
-            transactions = transactionGenerator(filePath);
+            transactions += transactionGenerator(filePath);
         } catch (const std::exception& e) {
-            qDebug() << "Error processing file:" << filePath << "->" << e.what();
+            QMessageBox messageBox;
+            messageBox.setFixedSize(500,200);
+            messageBox.critical(0,"Error", "Error processing file : " + filePath + "\n" + e.what());
             continue;
         }
-
-        // Add all transactions to model
-        for (Transaction& t : transactions)
-        {
-            m_model->addTransaction(Transaction(t));
-        }
     }
+
+    // Sort transactions by ascending date
+    std::sort(transactions.begin(), transactions.end(), [](const Transaction &a, const Transaction &b) {
+        return a.getDate() < b.getDate();
+    });
+
+    // Add all transactions to model
+    for (Transaction& t : transactions)
+        m_model->addTransaction(Transaction(t));
 }
 
 void TransactionsPage::handleDelete(int row)
+{
+    m_model->removeTransaction(row);
+}
+
+void TransactionsPage::onDeleteClicked(int row)
 {
     m_model->removeTransaction(row);
 }

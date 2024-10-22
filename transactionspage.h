@@ -16,6 +16,7 @@ class TransactionsPage: public QWidget{
 
 private slots:
     void handleDelete(int row);
+    void onDeleteClicked(int row);
 
 public:
     explicit TransactionsPage(QWidget* parent = nullptr);

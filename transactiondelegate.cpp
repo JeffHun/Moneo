@@ -1,4 +1,5 @@
 #include "transactiondelegate.h"
+#include "CustomDeleteButton.h"
 
 #include <QApplication>
 #include <QMouseEvent>
@@ -8,7 +9,8 @@
 #include <QStyleOptionButton>
 #include <QPainterPath>
 #include <QFont>
-#include <iostream>
+#include <QDoubleSpinBox>
+#include <QLineEdit>
 
 TransactionDelegate::TransactionDelegate(QObject* parent)
     : QStyledItemDelegate(parent)
@@ -21,13 +23,29 @@ QWidget* TransactionDelegate::createEditor(QWidget* parent, const QStyleOptionVi
     if (index.column() == 0) // Date
     {
         QDateEdit* editor = new QDateEdit(parent);
+        editor->setObjectName("dateEditor");
         editor->setCalendarPopup(false);
         editor->setDisplayFormat("dd-MM-yyyy");
+        return editor;
+    }
+    else if (index.column() == 1) // Description
+    {
+        QLineEdit* editor = new QLineEdit(parent);
+        editor->setObjectName("descriptionEditor");
+        return editor;
+    }
+    else if (index.column() == 2) // Amount
+    {
+        QDoubleSpinBox* editor = new QDoubleSpinBox(parent);
+        editor->setObjectName("amountEditor");
+        editor->setRange(-1000000.0, 1000000.0);
+        editor->setDecimals(2);
         return editor;
     }
     else if (index.column() == 3) // Category
     {
         QComboBox* editor = new QComboBox(parent);
+        editor->setObjectName("categoryEditor");
         // Autorized category
         editor->addItems(Transaction::getAllowedCategories());
 
@@ -43,6 +61,18 @@ void TransactionDelegate::setEditorData(QWidget* editor, const QModelIndex &inde
         QDateEdit* dateEdit = static_cast<QDateEdit*>(editor);
         QDate date = index.model()->data(index, Qt::EditRole).toDate();
         dateEdit->setDate(date);
+    }
+    else if (index.column() == 1) // Description
+    {
+        QLineEdit* lineEdit = static_cast<QLineEdit*>(editor);
+        QString currentText = index.model()->data(index, Qt::EditRole).toString();
+        lineEdit->setText(currentText);
+    }
+    else if (index.column() == 2) // Amount
+    {
+        QDoubleSpinBox* spinBox = static_cast<QDoubleSpinBox*>(editor);
+        double amount = index.model()->data(index, Qt::EditRole).toDouble();
+        spinBox->setValue(amount);
     }
     else if (index.column() == 3) // Category
     {
@@ -64,6 +94,16 @@ void TransactionDelegate::setModelData(QWidget* editor, QAbstractItemModel *mode
     {
         QDateEdit* dateEdit = static_cast<QDateEdit*>(editor);
         model->setData(index, dateEdit->date(), Qt::EditRole);
+    }
+    else if (index.column() == 1) // Description
+    {
+        QLineEdit* lineEdit = static_cast<QLineEdit*>(editor);
+        model->setData(index, lineEdit->text(), Qt::EditRole);
+    }
+    else if (index.column() == 2) // Amount
+    {
+        QDoubleSpinBox* spinBox = static_cast<QDoubleSpinBox*>(editor);
+        model->setData(index, spinBox->value(), Qt::EditRole);
     }
     else if (index.column() == 3) // Category
     {
@@ -90,7 +130,7 @@ void TransactionDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
         QPainterPath path;
         path.addRoundedRect(deleteBtn.rect, 10, 10);
         painter->fillPath(path, deleteBtn.palette.button());
-        QFont font("Roboto", 10, QFont::Bold);
+        QFont font("Roboto", 12);
         painter->setFont(font);
         painter->setPen(deleteBtn.palette.buttonText().color());
 

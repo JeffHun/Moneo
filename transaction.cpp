@@ -74,7 +74,7 @@ QList<Transaction> transactionGenerator(const QString& filePath) {
         QStringList items = in.readLine().split(';');
 
         if (items.size() < headers.size()) {
-            messageBox.critical(0,"Error", "File " + filePath + " line " + QChar(lineNbr) + " has an incrorrect number of columns");
+            messageBox.critical(0,"Error", "File " + filePath + " line " + QString::number(lineNbr) + " has an incrorrect number of columns");
             continue;
         }
 
@@ -83,14 +83,14 @@ QList<Transaction> transactionGenerator(const QString& filePath) {
         QDate date = QDate::fromString(items[columnIndices[DATE_COLUMN]], "dd/MM/yyyy");
         // Check if date is a valid value
         if (!date.isValid()) {
-            messageBox.critical(0,"Error", "Invalid date in the file : " + filePath + " on the line : " + QChar(lineNbr));
+            messageBox.critical(0,"Error", "Invalid date in the file : " + filePath + " on the line : " + QString::number(lineNbr));
             continue;
         }
 
         QString description = items[columnIndices[DESCRIPTION_COLUMN]];
         // Check if description is a valid value
         if (description.isEmpty()) {
-            messageBox.critical(0,"Error", "Empty description in the file : " + filePath + " on the line : " + QChar(lineNbr));
+            messageBox.critical(0,"Error", "Empty description in the file : " + filePath + " on the line : " + QString::number(lineNbr));
             continue;
         }
 
@@ -100,7 +100,7 @@ QList<Transaction> transactionGenerator(const QString& filePath) {
                             items[columnIndices[DEBIT_COLUMN]].replace(",", ".").toDouble();
         if(amount == 0)
         {
-            messageBox.critical(0,"Error", "Invalid amount in the file : " + filePath + " on the line : " + QChar(lineNbr));
+            messageBox.critical(0,"Error", "Invalid amount in the file : " + filePath + " on the line : " + QString::number(lineNbr));
             continue;
         }
 
@@ -109,7 +109,7 @@ QList<Transaction> transactionGenerator(const QString& filePath) {
 
         // Check if category is a valid value
         if (category.isEmpty()) {
-            messageBox.critical(0,"Error", "Empty category in file : " + filePath + " on the line : " + QChar(lineNbr));
+            messageBox.critical(0,"Error", "Empty category in file : " + filePath + " on the line : " + QString::number(lineNbr));
             continue;
         }
 
