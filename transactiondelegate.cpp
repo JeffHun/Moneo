@@ -1,5 +1,4 @@
 #include "transactiondelegate.h"
-#include "CustomDeleteButton.h"
 
 #include <QApplication>
 #include <QMouseEvent>

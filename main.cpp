@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include <QApplication>
 #include "transaction.h"
-#include <QDir>
 
 int main(int argc, char *argv[])
 {

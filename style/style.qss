@@ -160,6 +160,10 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal{
     background: #C2C2C2;
 }
 
+QHeaderView {
+    background-color: #15131B;
+}
+
 QTableView {
     background-color: #15131B;
     gridline-color: #bbb;
@@ -236,4 +240,6 @@ QTableView QTableCornerButton::section {
     background-color: #4C3B88;
 }
 
-
+#chartViewTransaction{
+    background-color: #15131B;
+}
