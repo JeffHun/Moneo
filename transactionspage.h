@@ -31,6 +31,7 @@ private:
     TransactionDelegate* m_transactionsDelegate;
     QHBoxLayout* m_tableGraphLayout;
     QChartView* m_chartView;
+    QChart* m_balanceChart;
 
     void loadTransactionsFromFilesAndSetupModel(QList<QFile*> files);
     void resetModel();
@@ -44,6 +45,12 @@ private:
     void showError(const QString& message);
     void updateBalanceAndModel(QList<Transaction>& transactions);
     QColor generateRandomColor();
+    void setupBalanceChart();
+    QWidget* balanceContainer;
+    QVBoxLayout* balanceContainerLayout;
+    QWidget* monthBtns;
+    QChartView* chartView;
+    QGridLayout *gridLayout;
 };
 
 #endif // TRANSACTIONSPAGE_H

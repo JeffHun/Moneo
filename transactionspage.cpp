@@ -12,6 +12,7 @@ TransactionsPage::TransactionsPage(QWidget *parent) : QWidget(parent)
 {
     setupUI();
     setupTableView();
+    setupBalanceChart();
 
     // Test to verify the modification
     QPushButton* btnTest = new QPushButton(this);
@@ -49,11 +50,13 @@ void TransactionsPage::setupUI()
             messageBox.setFixedSize(500,200);
             messageBox.critical(0,"Error", "No data to process");
             m_transactionsView->hide();
+            m_balanceChart->setVisible(false);
         }
         else
         {
             loadTransactionsFromFilesAndSetupModel(dropZone->getFiles());
             m_transactionsView->show();
+            m_balanceChart->setVisible(true);
         }
 
     });
@@ -159,15 +162,20 @@ void TransactionsPage::showError(const QString& message) {
     messageBox.critical(0, "Error", message);
 }
 
-void TransactionsPage::createGraphLine(QMap<QDate, int> balance)
+void TransactionsPage::setupBalanceChart()
 {
-    QChart* chart = new QChart();
-    chart->setBackgroundBrush(QBrush(QColor("#241E38")));
-    chart->setTitleFont(QFont("Roboto Light", 10));
-    chart->legend()->setLabelBrush(QBrush(QColor("#D9D9D9")));
+    m_balanceChart = new QChart();
+    m_balanceChart->setBackgroundBrush(QBrush(QColor("#241E38")));
+    m_balanceChart->setTitleFont(QFont("Roboto Light", 10));
+    m_balanceChart->legend()->setLabelBrush(QBrush(QColor("#D9D9D9")));
+
+    chartView = new QChartView(m_balanceChart);
+    chartView->setObjectName("chartViewTransaction");
+    chartView->setRenderHint(QPainter::Antialiasing);
+    chartView->setVisible(true);
 
     //horizontal line of zero value
-    QLineSeries *zeroLine = new QLineSeries(this);
+    QLineSeries *zeroLine = new QLineSeries(m_balanceChart);
     qreal yValue = 0.0;
     zeroLine->append(0, yValue);
     zeroLine->append(100, yValue);
@@ -175,11 +183,40 @@ void TransactionsPage::createGraphLine(QMap<QDate, int> balance)
     pen.setWidth(1);
     pen.setStyle(Qt::DashLine);
     zeroLine->setPen(pen);
-    chart->addSeries(zeroLine);
-    chart->legend()->markers(zeroLine)[0]->setVisible(false);
+    m_balanceChart->addSeries(zeroLine);
+    m_balanceChart->legend()->markers(zeroLine)[0]->setVisible(false);
 
+    m_balanceChart->createDefaultAxes();
+    QValueAxis *axisX = qobject_cast<QValueAxis*>(m_balanceChart->axes(Qt::Horizontal).first());
+    QValueAxis *axisY = qobject_cast<QValueAxis*>(m_balanceChart->axes(Qt::Vertical).first());
+
+    configureAxis(axisX, "Day");
+    configureAxis(axisY, "Balance");
+
+    balanceContainer = new QWidget(this);
+    balanceContainerLayout = new QVBoxLayout(balanceContainer);
+    monthBtns = new QWidget(this);
+    gridLayout = new QGridLayout(monthBtns);
+
+    balanceContainerLayout->addWidget(chartView);
+    balanceContainerLayout->addWidget(monthBtns);
+
+    m_balanceChart->setVisible(false);
+}
+
+void TransactionsPage::createGraphLine(QMap<QDate, int> balance)
+{
+    // Clean
+    m_balanceChart->removeAllSeries();
+    for (QObject* child : monthBtns->children()) {
+        if (QPushButton* button = qobject_cast<QPushButton*>(child)) {
+            delete button;
+        }
+    }
+
+    // Create new serie for each month
     QList<QLineSeries*> series;
-    series.append(new QLineSeries(this));
+    series.append(new QLineSeries(m_balanceChart));
     int i = 0;
     QMap<QDate, int>::const_iterator it = balance.constBegin();
     int currentMonth = it.key().month();
@@ -189,7 +226,7 @@ void TransactionsPage::createGraphLine(QMap<QDate, int> balance)
             series[i]->append(key.day(), balance[key]);
         else
         {
-            series.append(new QLineSeries(this));
+            series.append(new QLineSeries(m_balanceChart));
             i++;
             currentMonth = key.month();
             series[i]->setName(QString::number(key.month())+"/"+QString::number(key.year()));
@@ -198,47 +235,35 @@ void TransactionsPage::createGraphLine(QMap<QDate, int> balance)
         }
     }
 
-
+    // Add series
     for(QLineSeries* serie: series)
-        chart->addSeries(serie);
+        m_balanceChart->addSeries(serie);
 
-    chart->createDefaultAxes();
     auto minmax = std::minmax_element(balance.begin(), balance.end());
     int minValue = *minmax.first;
     int maxValue = *minmax.second;
-    chart->axes(Qt::Vertical).first()->setRange(minValue, maxValue);
-    chart->axes(Qt::Horizontal).first()->setRange(1, 31);
+    m_balanceChart->axes(Qt::Vertical).first()->setRange(minValue, maxValue);
+    m_balanceChart->axes(Qt::Horizontal).first()->setRange(1, 31);
 
-    QValueAxis *axisX = qobject_cast<QValueAxis*>(chart->axes(Qt::Horizontal).first());
-    QValueAxis *axisY = qobject_cast<QValueAxis*>(chart->axes(Qt::Vertical).first());
-
-    configureAxis(axisX, "Day");
-    configureAxis(axisY, "Balance");
-
-    chart->setVisible(true);
-
-    QChartView* chartView = new QChartView(chart);
-    chartView->setObjectName("chartViewTransaction");
-    chartView->setRenderHint(QPainter::Antialiasing);
-    chartView->setVisible(true);
-    m_tableGraphLayout->addWidget(chartView);
-
-    QWidget* monthBtns = new QWidget(this);
-    m_tableGraphLayout->addWidget(monthBtns);
-
-    QVBoxLayout* monthBtnsLayout = new QVBoxLayout(monthBtns);
-
-    for(QLineSeries* serie: series)
+    // Create buttons
+    QChart* chart = m_balanceChart;
+    for(int i = 0; i< series.count(); i++)
     {
-        QPushButton* btn = new QPushButton(serie->name(), this);
-        monthBtnsLayout->addWidget(btn);
+        int column = i % 6;
+        int row = i / 6;
+
+        QPushButton* btn = new QPushButton(series[i]->name(), monthBtns);
+        gridLayout->addWidget(btn, row, column);
         ButtonUtility::connectToggleActiveProperty(btn);
         btn->setProperty("active", true);
+        QLineSeries* serie = series[i];
         connect(btn, &QPushButton::clicked, this, [btn, chart, serie]() {
             bool isActive = btn->property("active").toBool();
             serie->setVisible(isActive);
         });
     }
+
+    m_tableGraphLayout->addWidget(balanceContainer);
 }
 
 QColor TransactionsPage::generateRandomColor() {
