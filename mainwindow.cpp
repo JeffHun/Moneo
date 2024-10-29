@@ -13,14 +13,14 @@
 #include <QHeaderView>
 #include <Iostream>
 #include <QLabel>
-#include <QStackedWidget>
+#include <QObject>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), m_menuActiveButton(nullptr)
 {
     moveToPrimaryScreen();
 
     uiSetUp();
-    loadTransactionsContent();
+    loadBudgetContent();
 }
 
 void MainWindow::uiSetUp()
@@ -143,6 +143,10 @@ void MainWindow::loadBudgetContent()
 void MainWindow::loadAnalysisContent()
 {
     m_stack->setCurrentIndex(3);
+    BudgetPage *budgetPage = qobject_cast<BudgetPage*>(m_stack->widget(2));
+    if (budgetPage) {
+        budgetPage->setBudgetCategoryValues();
+    }
     qDebug() << "Analysis page";
 }
 
@@ -169,4 +173,5 @@ void MainWindow::moveToPrimaryScreen() {
 
 MainWindow::~MainWindow()
 {
+    delete m_menuActiveButton;
 }

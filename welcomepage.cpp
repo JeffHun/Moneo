@@ -1,4 +1,5 @@
 #include "welcomepage.h"
+#include "mainwindow.h"
 
 #include <QPushButton>
 
@@ -40,17 +41,12 @@ WelcomePage::WelcomePage(QWidget* parent) : QWidget(parent) {
     imgsContainerLyt->addWidget(createImageContainer(":/resources/style/img/analyticsIllustration.png", "View the analytics and identify optional expenses.", size, imgsContainer));
     imgsContainerLyt->addStretch();
 
-    QPushButton* btn = new QPushButton("Upload file",this);
-    btn->setFixedWidth(150);
-
     layout->addStretch();
     layout->addStretch();
     layout->addWidget(title);
     layout->addWidget(description);
     layout->addStretch();
     layout->addWidget(imgsContainer);
-    layout->addStretch();
-    layout->addWidget(btn, 0, Qt::AlignCenter);
     layout->addStretch();
     layout->addStretch();
 }

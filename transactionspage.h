@@ -20,37 +20,34 @@ class TransactionsPage: public QWidget{
 
 private slots:
     void handleDelete(int row);
-    void onDeleteClicked(int row);
 
 public:
     explicit TransactionsPage(QWidget* parent = nullptr);
+    ~TransactionsPage();
 
 private:
     QTableView* m_transactionsView;
     TransactionModel* m_transactionsModel;
     TransactionDelegate* m_transactionsDelegate;
     QHBoxLayout* m_tableGraphLayout;
-    QChartView* m_chartView;
     QChart* m_balanceChart;
+    QChartView* m_chartView;
+    QWidget* m_balanceContainer;
+    QVBoxLayout* m_balanceContainerLayout;
+    QWidget* m_monthBtnsContainer;
+    QGridLayout* m_gridLayout;
 
     void loadTransactionsFromFilesAndSetupModel(QList<QFile*> files);
     void resetModel();
 
     void setupUI();
     void setupTableView();
-    void setupLineView();
     void createGraphLine(QMap<QDate, int> balance);
     void configureAxis(QValueAxis *axis, const QString &title);
     void loadTransactionsFromFiles(QList<QFile*> files, QList<Transaction>& transactions);
     void showError(const QString& message);
     void updateBalanceAndModel(QList<Transaction>& transactions);
     QColor generateRandomColor();
-    void setupBalanceChart();
-    QWidget* balanceContainer;
-    QVBoxLayout* balanceContainerLayout;
-    QWidget* monthBtns;
-    QChartView* chartView;
-    QGridLayout *gridLayout;
 };
 
 #endif // TRANSACTIONSPAGE_H

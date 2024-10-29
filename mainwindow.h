@@ -18,6 +18,9 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+public slots:
+    void loadTransactionsContent();
+
 private:
     QPushButton* m_menuActiveButton;
     QStackedWidget* m_stack;
@@ -26,7 +29,6 @@ private:
     void setButtonState(QPushButton*, bool);
 
     void loadWelcomeContent();
-    void loadTransactionsContent();
     void loadBudgetContent();
     void loadAnalysisContent();
     void loadSettingsContent();
@@ -36,5 +38,7 @@ private:
     void uiSetUp();
     void deleteContentChildren();
 };
+
+
 
 #endif // MAINWINDOW_H

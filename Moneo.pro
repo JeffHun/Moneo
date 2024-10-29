@@ -10,6 +10,7 @@ CONFIG += c++17
 
 SOURCES += \
     analysispage.cpp \
+    budgetcategory.cpp \
     budgetpage.cpp \
     buttonutility.cpp \
     filedropzone.cpp \
@@ -24,6 +25,7 @@ SOURCES += \
 
 HEADERS += \
     analysispage.h \
+    budgetcategory.h \
     budgetpage.h \
     buttonutility.h \
     filedropzone.h \

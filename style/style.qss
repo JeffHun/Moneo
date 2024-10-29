@@ -243,3 +243,27 @@ QTableView QTableCornerButton::section {
 #chartViewTransaction{
     background-color: #15131B;
 }
+
+#budgetChartView{
+    background: transparent;
+}
+
+#categoryLabel{
+    font-family: Roboto Thin;
+    font-size: 15px;
+    color: #D9D9D9;
+}
+
+#lineEdit{
+    background-color: #3D3558;
+    border-radius: 5px;
+    font-family: Roboto Medium;
+    color: #D9D9D9;
+    font-size: 15px;
+}
+
+#percentage{
+    color: #D9D9D9;
+    font-family: Roboto Light;
+    font-size: 15px;
+}
