@@ -19,9 +19,17 @@ void BudgetCategory::setup()
 
     QLabel *iconLabel = new QLabel(this);
     QPixmap categoryImg(m_imgPath);
+    QPixmap coloredPixmap(categoryImg.size());
+    coloredPixmap.fill(Qt::transparent);
+    QPainter painter(&coloredPixmap);
+    painter.drawPixmap(0, 0, categoryImg);
+    painter.setCompositionMode(QPainter::CompositionMode_SourceIn);
+    painter.fillRect(coloredPixmap.rect(), m_color);
+    painter.end();
+
     QSize size(30,30);
     categoryImg = categoryImg.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    iconLabel->setPixmap(categoryImg);
+    iconLabel->setPixmap(coloredPixmap);
     iconLabel->setAlignment(Qt::AlignCenter);
 
     QLabel *categoryLabel = new QLabel(m_name, this);
@@ -36,7 +44,7 @@ void BudgetCategory::setup()
     m_slice->setValue(m_value);
 
     // Constrain inputs to float
-    QDoubleValidator *doubleValidator = new QDoubleValidator(0.00, std::numeric_limits<double>::max(), 2, m_lineEdit);
+    QDoubleValidator *doubleValidator = new QDoubleValidator(0.00, std::numeric_limits<double>::max(), 0, m_lineEdit);
     doubleValidator->setNotation(QDoubleValidator::StandardNotation);
     m_lineEdit->setValidator(doubleValidator);
 
@@ -49,12 +57,6 @@ void BudgetCategory::setup()
     budgetingCategoryLayout->addWidget(m_lineEdit);
     budgetingCategoryLayout->addWidget(m_percentage);
 
-    // Set background color
-    setObjectName("budgetingCategoryWidget");
-    setStyleSheet(QString("#budgetingCategoryWidget{"
-                          "background-color: %1;"
-                          "border-radius: 10px; }").arg(m_color));
-
     //Update pie chart slice and percentage each time value is edit
     connect(m_lineEdit, &QLineEdit::editingFinished, [this]() {
         for(int i=0; i<m_budgetCategories.count(); i++)
@@ -62,6 +64,7 @@ void BudgetCategory::setup()
             m_budgetCategories[i]->updateSlice();
             m_budgetCategories[i]->updatePercentageLabel();
         }
+        emit valueChanged(m_value);
     });
 }
 

@@ -12,10 +12,10 @@ BudgetPage::BudgetPage(QWidget* parent) : QWidget(parent) {
     title->setObjectName("bigTitle");
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->addWidget(title);
-    QLabel* total = new QLabel("?", this);
-    layout->addWidget(total);
-    total->setObjectName("title");
-    total->setAlignment(Qt::AlignCenter);
+    m_total = new QLabel("?", this);
+    layout->addWidget(m_total);
+    m_total->setObjectName("text");
+    m_total->setAlignment(Qt::AlignCenter);
     QWidget* budgetContainer = new QWidget(this);
     QHBoxLayout* budgetLayout = new QHBoxLayout(budgetContainer);
     layout->addWidget(budgetContainer);
@@ -65,6 +65,16 @@ BudgetPage::BudgetPage(QWidget* parent) : QWidget(parent) {
         m_budgetCategories[i]->updateSlice();
         m_budgetCategories[i]->updatePercentageLabel();
     }
+
+    updateTotalValue();
+}
+
+void BudgetPage::updateTotalValue() {
+    float totalValue = 0;
+    for (BudgetCategory* category : m_budgetCategories) {
+        totalValue += category->getValue();
+    }
+    m_total->setText(QString("Total: %1").arg(totalValue, 0, 'f', 2));
 }
 
 void BudgetPage::createCategories(QGridLayout* layout, QWidget* container, QLabel* expenseExampleLabel, QPieSeries* series) {
@@ -97,7 +107,7 @@ void BudgetPage::createCategories(QGridLayout* layout, QWidget* container, QLabe
     QStringList colors = {"#B35652", "#B3527C", "#B352AE", "#7B52B3", "#5254B3", "#527DB3", "#52A6B3", "#52B393",
                           "#52B363", "#71B352", "#9EB352", "#B3A752", "#B38952"};
 
-    // Creat BudgetCategory and place it
+    // Create BudgetCategory and place it
     for (int i = 0; i < categoryNames.size(); ++i) {
         BudgetCategory *category = new BudgetCategory(container, icons[i], categoryNames[i], colors[i], series->slices().at(i), m_budgetCategoriesValues[i], expenseExampleLabel);
         m_budgetCategories.append(category);
@@ -108,6 +118,11 @@ void BudgetPage::createCategories(QGridLayout* layout, QWidget* container, QLabe
     for(BudgetCategory* category: m_budgetCategories)
     {
         category->setBudgetCategories(m_budgetCategories);
+    }
+
+    // Connect each budgetCategory signal to budgetPage slot
+    for (BudgetCategory* category : m_budgetCategories) {
+        connect(category, &BudgetCategory::valueChanged, this, &BudgetPage::updateTotalValue);
     }
 }
 

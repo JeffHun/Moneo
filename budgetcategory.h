@@ -7,6 +7,8 @@
 
 class BudgetCategory : public QWidget
 {
+    Q_OBJECT
+
 public:
     explicit BudgetCategory(QWidget* parent, const QString& imgPath, const QString& name, const QString& color, QPieSlice* slice, float value, QLabel* expenseExemple);
     void updateSlice();
@@ -30,6 +32,9 @@ private:
 
     void setup();
     void updateExpenseExemple();
+
+signals:
+    void valueChanged(float newValue);
 };
 
 #endif // BUDGETCATEGORY_H
