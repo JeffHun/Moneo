@@ -72,7 +72,6 @@ void FileDropZone::dropEvent(QDropEvent* event){
         QList<QUrl> urls = event->mimeData()->urls();
         for (const QUrl &url : urls) {
             QString filePath = url.toLocalFile();
-            qDebug()<< filePath;
             QFile* aFile = new QFile(filePath);
             addFile(aFile);
             m_dropContainer->setProperty("isHovered", false);

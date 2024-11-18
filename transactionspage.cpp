@@ -12,19 +12,11 @@ TransactionsPage::TransactionsPage(QWidget *parent) : QWidget(parent), m_balance
 {
     setupUI();
     setupTableView();
+}
 
-    // Test to verify the modification
-    QPushButton* btnTest = new QPushButton(this);
-    btnTest->setText("Test");
-    connect(btnTest, &QPushButton::clicked, [this]() {
-        QVector<Transaction> currentTransactions = m_transactionsModel->getTransactions();
-        for (const Transaction& t : currentTransactions) {
-            qDebug() << "Date:" << t.getDate().day() << "/" << t.getDate().month() << "/" << t.getDate().year() << " | "
-                     << "Description:" << t.getDescription() << " | "
-                     << "Amount:" << t.getAmount() << " | "
-                     << "Catégory:" << t.getCategory() << "\n";
-        }
-    });
+QVector<Transaction> TransactionsPage::getTransactions()
+{
+    return m_transactionsModel->getTransactions();
 }
 
 void TransactionsPage::setupUI()
@@ -163,6 +155,7 @@ void TransactionsPage::createGraphLine(QMap<QDate, int> balance)
 {
     if (!m_balanceChart) {
         m_balanceChart = new QChart();
+        m_balanceChart->setAnimationOptions(QChart::SeriesAnimations);
         m_balanceChart->setBackgroundBrush(QBrush(QColor("#241E38")));
         m_balanceChart->setTitleFont(QFont("Roboto Light", 10));
         m_balanceChart->legend()->setLabelBrush(QBrush(QColor("#D9D9D9")));
@@ -199,13 +192,6 @@ void TransactionsPage::createGraphLine(QMap<QDate, int> balance)
     m_balanceChart->addSeries(zeroLine);
     m_balanceChart->legend()->markers(zeroLine)[0]->setVisible(false);
 
-    // Create axes
-    m_balanceChart->createDefaultAxes();
-    QValueAxis *axisX = qobject_cast<QValueAxis*>(m_balanceChart->axes(Qt::Horizontal).first());
-    QValueAxis *axisY = qobject_cast<QValueAxis*>(m_balanceChart->axes(Qt::Vertical).first());
-    configureAxis(axisX, "Day");
-    configureAxis(axisY, "Balance");
-
     // Create new series for each month
     QList<QLineSeries*> series;
     series.append(new QLineSeries(m_balanceChart));
@@ -240,6 +226,13 @@ void TransactionsPage::createGraphLine(QMap<QDate, int> balance)
             serie->setVisible(isActive);
         });
     }
+
+    // Create axes
+    m_balanceChart->createDefaultAxes();
+    QValueAxis *axisX = qobject_cast<QValueAxis*>(m_balanceChart->axes(Qt::Horizontal).first());
+    QValueAxis *axisY = qobject_cast<QValueAxis*>(m_balanceChart->axes(Qt::Vertical).first());
+    configureAxis(axisX, "Day");
+    configureAxis(axisY, "Balance");
 
     // Adjust the range of axes based on balance data
     auto minmax = std::minmax_element(balance.begin(), balance.end());

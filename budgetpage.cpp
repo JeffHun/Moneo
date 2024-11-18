@@ -46,6 +46,7 @@ BudgetPage::BudgetPage(QWidget* parent) : QWidget(parent) {
 
     QChart *chart = new QChart();
     chart->addSeries(series);
+    chart->setAnimationOptions(QChart::SeriesAnimations);
     chart->setMargins(QMargins(0, 0, 0, 0));
     chart->legend()->hide();
     chart->setBackgroundBrush(Qt::NoBrush);
@@ -124,6 +125,11 @@ void BudgetPage::createCategories(QGridLayout* layout, QWidget* container, QLabe
     for (BudgetCategory* category : m_budgetCategories) {
         connect(category, &BudgetCategory::valueChanged, this, &BudgetPage::updateTotalValue);
     }
+}
+
+QSettings* BudgetPage::getSettings()
+{
+    return m_settings;
 }
 
 void BudgetPage::getBudgetCategoryValues()

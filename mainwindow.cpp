@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), m_menuActiveButto
     moveToPrimaryScreen();
 
     uiSetUp();
-    loadBudgetContent();
+    loadWelcomeContent();
 }
 
 void MainWindow::uiSetUp()
@@ -125,19 +125,16 @@ void MainWindow::createMenuButton(QWidget* parent,QVBoxLayout* layout, const QSt
 void MainWindow::loadWelcomeContent()
 {
     m_stack->setCurrentIndex(0);
-    qDebug() << "Welcome page";
 }
 
 void MainWindow::loadTransactionsContent()
 {
     m_stack->setCurrentIndex(1);
-    qDebug() << "Transactions page";
 }
 
 void MainWindow::loadBudgetContent()
 {
     m_stack->setCurrentIndex(2);
-    qDebug() << "Budget page";
 }
 
 void MainWindow::loadAnalysisContent()
@@ -147,13 +144,17 @@ void MainWindow::loadAnalysisContent()
     if (budgetPage) {
         budgetPage->setBudgetCategoryValues();
     }
-    qDebug() << "Analysis page";
+
+    AnalysisPage *analysisPage = qobject_cast<AnalysisPage*>(m_stack->widget(3));
+    TransactionsPage *transactionsPage = qobject_cast<TransactionsPage*>(m_stack->widget(1));
+    analysisPage->setTransactions(transactionsPage->getTransactions());
+    analysisPage->setBudgets(budgetPage->getSettings());
+    analysisPage->headerGeneration();
 }
 
 void MainWindow::loadSettingsContent()
 {
     m_stack->setCurrentIndex(4);
-    qDebug() << "Settings page";
 }
 
 void MainWindow::setButtonState(QPushButton* button, bool state) {

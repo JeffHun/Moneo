@@ -14,6 +14,7 @@ class BudgetPage: public QWidget{
 public:
     explicit BudgetPage(QWidget* parent = nullptr);
     void setBudgetCategoryValues();
+    QSettings* getSettings();
 
 private:
     QList<int> m_budgetCategoriesValues;

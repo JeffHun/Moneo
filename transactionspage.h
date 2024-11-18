@@ -10,6 +10,7 @@
 #include <QtCharts>
 #include <vector>
 
+#include "transaction.h"
 #include "transactionmodel.h"
 #include "transactiondelegate.h"
 #include "fileDropZone.h"
@@ -24,6 +25,7 @@ private slots:
 public:
     explicit TransactionsPage(QWidget* parent = nullptr);
     ~TransactionsPage();
+    QVector<Transaction> getTransactions();
 
 private:
     QTableView* m_transactionsView;
