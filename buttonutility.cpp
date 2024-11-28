@@ -29,3 +29,13 @@ void ButtonUtility::connectToggleActiveProperty(QPushButton* button)
         button->update();
     });
 }
+
+void ButtonUtility::connectUniqueToggleActiveProperty(QList<QPushButton*> btns, int activeIndex) {
+    for (int j = 0; j < btns.count(); ++j) {
+        bool isActive = (j == activeIndex);
+        btns[j]->setProperty("active", isActive);
+        btns[j]->style()->unpolish(btns[j]);
+        btns[j]->style()->polish(btns[j]);
+        btns[j]->update();
+    }
+}

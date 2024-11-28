@@ -140,6 +140,7 @@ void MainWindow::loadBudgetContent()
 void MainWindow::loadAnalysisContent()
 {
     m_stack->setCurrentIndex(3);
+    // Update budgets values when analysis page is load
     BudgetPage *budgetPage = qobject_cast<BudgetPage*>(m_stack->widget(2));
     if (budgetPage) {
         budgetPage->setBudgetCategoryValues();

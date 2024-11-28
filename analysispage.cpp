@@ -1,52 +1,61 @@
 #include "analysispage.h"
+#include "buttonutility.h"
+
 #include <cmath>
 
-AnalysisPage::AnalysisPage(QWidget* parent) : QWidget(parent) {
+AnalysisPage::AnalysisPage(QWidget* parent) : QWidget(parent){
     QLabel* title = new QLabel("Analysis", this);
     title->setObjectName("title");
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->addWidget(title, 0, Qt::AlignCenter);
+    m_monthBtnsContainer = new QWidget(this);
+
+    m_axisX = new QBarCategoryAxis();
+    m_axisY = new QValueAxis();
+
+    m_chart = new QChart();
+    m_chart->setAnimationOptions(QChart::SeriesAnimations);
+
+    m_chartView = new QChartView(m_chart, this);
+    m_chartView->setRenderHint(QPainter::Antialiasing);
+
+    m_chart->setBackgroundBrush(Qt::NoBrush);
+    m_chart->setBackgroundPen(Qt::NoPen);
+    m_chart->setPlotAreaBackgroundBrush(Qt::NoBrush);
+    m_chart->setPlotAreaBackgroundVisible(false);
+
+    layout->addWidget(m_monthBtnsContainer);
+    layout->addWidget(m_chartView);
+    m_chartView->setChart(m_chart);
 }
 
-void AnalysisPage::graphGeneration(QVector<Transaction> transactions)
+void AnalysisPage::graphGeneration(int i)
 {
-    QBarSet *expenses = new QBarSet("Expenses");
-    QBarSet *budget = new QBarSet("Budget");
+    QList<Transaction> transactions = m_months[i];
+
+    // Initialize the layout
+    QVBoxLayout* mainLayout = qobject_cast<QVBoxLayout*>(layout());
+    if (!mainLayout) {
+        mainLayout = new QVBoxLayout(this);
+        setLayout(mainLayout);
+    }
+
+    // Clear existing series and axes
+    m_chart->removeAllSeries();
+    QList<QAbstractAxis*> axes = m_chart->axes();
+    for (QAbstractAxis* axis : axes) {
+        m_chart->removeAxis(axis);
+    }
+
+    // Create new series and bar sets
+    m_expenses = new QBarSet("Expenses");
+    m_budget = new QBarSet("Budget");
+    m_series = new QBarSeries();
 
     int max = 0;
-    int incomesTotal = 0;
-    int inflowsTotal = 0;
-    int refundsTotal = 0;
-    int foodsTotal = 0;
-    int banksTotal = 0;
-    int educationsTotal = 0;
-    int taxesTotal = 0;
-    int legalsTotal = 0;
-    int housingsTotal = 0;
-    int leisuresTotal = 0;
-    int healthsTotal = 0;
-    int shoppingsTotal = 0;
-    int excludedsTotal = 0;
-    int transportsTotal = 0;
-    int outflowsTotal = 0;
-    int savingsTotal = 0;
+    int incomesTotal = 0, inflowsTotal = 0, refundsTotal = 0, foodsTotal = 0, banksTotal = 0, educationsTotal = 0, taxesTotal = 0, legalsTotal = 0, housingsTotal = 0, leisuresTotal = 0, healthsTotal = 0, shoppingsTotal = 0, excludedsTotal = 0, transportsTotal = 0, outflowsTotal = 0, savingsTotal = 0;
 
-    QVector<Transaction> incomes;
-    QVector<Transaction> inflows;
-    QVector<Transaction> refunds;
-    QVector<Transaction> foods;
-    QVector<Transaction> banks;
-    QVector<Transaction> educations;
-    QVector<Transaction> taxes;
-    QVector<Transaction> legals;
-    QVector<Transaction> housings;
-    QVector<Transaction> leisures;
-    QVector<Transaction> healths;
-    QVector<Transaction> shoppings;
-    QVector<Transaction> excludeds;
-    QVector<Transaction> transports;
-    QVector<Transaction> outflows;
-    QVector<Transaction> savings;
+    QVector<Transaction> incomes, inflows, refunds, foods, banks, educations, taxes, legals, housings, leisures, healths, shoppings, excludeds, transports, outflows, savings;
 
     QMap<QString, QVector<Transaction>*> categoryMap = {
         {"Income and earnings", &incomes},
@@ -147,22 +156,22 @@ void AnalysisPage::graphGeneration(QVector<Transaction> transactions)
     if(max < m_budgets["health"])
         max = m_budgets["health"];
 
-    *expenses <<
-            foodsTotal <<
-            excludedsTotal <<
-            leisuresTotal <<
-            educationsTotal <<
-            shoppingsTotal <<
-            taxesTotal <<
-            transportsTotal <<
-            savingsTotal <<
-            outflowsTotal <<
-            legalsTotal <<
-            banksTotal <<
-            housingsTotal <<
-            healthsTotal;
+    *m_expenses <<
+        foodsTotal <<
+        excludedsTotal <<
+        leisuresTotal <<
+        educationsTotal <<
+        shoppingsTotal <<
+        taxesTotal <<
+        transportsTotal <<
+        savingsTotal <<
+        outflowsTotal <<
+        legalsTotal <<
+        banksTotal <<
+        housingsTotal <<
+        healthsTotal;
 
-    *budget <<
+    *m_budget <<
         m_budgets["food"] <<
         m_budgets["excluded"] <<
         m_budgets["leisure"] <<
@@ -177,17 +186,15 @@ void AnalysisPage::graphGeneration(QVector<Transaction> transactions)
         m_budgets["housing"] <<
         m_budgets["health"];
 
-    QBarSeries *series = new QBarSeries();
-    series->append(expenses);
-    series->append(budget);
+    m_series->append(m_expenses);
+    m_series->append(m_budget);
 
     // Display vlaue inside bar
-    series->setLabelsVisible(true);
-    series->setLabelsFormat("@value");
+    m_series->setLabelsVisible(true);
+    m_series->setLabelsFormat("@value");
 
-    QChart *chart = new QChart();
-    chart->addSeries(series);
-    chart->setAnimationOptions(QChart::SeriesAnimations);
+    m_chart->addSeries(m_series);
+    m_chart->setAnimationOptions(QChart::SeriesAnimations);
 
     QStringList categories;
     categories <<
@@ -205,24 +212,18 @@ void AnalysisPage::graphGeneration(QVector<Transaction> transactions)
         "Housing\n" + QString::number(std::floor(m_budgets["housing"] - housingsTotal))<<
         "Health\n" + QString::number(std::floor(m_budgets["health"] - healthsTotal));
 
-    QBarCategoryAxis *axisX = new QBarCategoryAxis();
-    axisX->append(categories);
-    chart->addAxis(axisX, Qt::AlignBottom);
-    series->attachAxis(axisX);
+    m_axisX = new QBarCategoryAxis();
+    m_axisX->append(categories);
+    m_chart->addAxis(m_axisX, Qt::AlignBottom);
+    m_series->attachAxis(m_axisX);
 
-    QValueAxis *axisY = new QValueAxis();
-    axisY->setRange(0, max);
-    chart->addAxis(axisY, Qt::AlignLeft);
-    series->attachAxis(axisY);
+    m_axisY = new QValueAxis();
+    m_axisY->setRange(0, max);
+    m_chart->addAxis(m_axisY, Qt::AlignLeft);
+    m_series->attachAxis(m_axisY);
 
-    QChartView *chartView = new QChartView(chart);
-    chartView->setRenderHint(QPainter::Antialiasing);
-
-    QWidget* iconContainer = new QWidget(chartView);
-    QHBoxLayout* iconLayout = new QHBoxLayout(iconContainer);
-
-    QVBoxLayout* mainLayout = qobject_cast<QVBoxLayout*>(layout());
-    mainLayout->addWidget(chartView);
+    m_chartView->setChart(m_chart);
+    m_chartView->setRenderHint(QPainter::Antialiasing);
 }
 
 void AnalysisPage::headerGeneration()
@@ -231,17 +232,29 @@ void AnalysisPage::headerGeneration()
     if (m_transactions.isEmpty())
         return;
 
-    QVBoxLayout* mainLayout = qobject_cast<QVBoxLayout*>(layout());
-    if (!mainLayout) {
-        mainLayout = new QVBoxLayout(this);
-        setLayout(mainLayout);
+    // Remove last btns
+    for(int i = 0; i < m_btns.count(); ++i)
+    {
+        m_btns[i]->disconnect();
+        delete m_btns[i];
     }
 
-    QWidget* monthBtnsContainer = new QWidget(this);
+    m_btns.clear();
 
-    QVector<QVector<Transaction>> months;
+    if (m_monthBtnsContainer->layout()) {
+        QLayout* oldLayout = m_monthBtnsContainer->layout();
+        QLayoutItem* item;
+        while ((item = oldLayout->takeAt(0)) != nullptr) {
+            delete item->widget();
+            delete item;
+        }
+        delete oldLayout;
+    }
+
     QVector<Transaction> month;
     int currentMonth = m_transactions[0].getDate().month();
+
+    m_months.clear();
 
     // Group transactions by month
     for (Transaction& t : m_transactions)
@@ -249,30 +262,47 @@ void AnalysisPage::headerGeneration()
         if (t.getDate().month() == currentMonth) {
             month.append(t);
         } else {
-            months.append(month);
+            m_months.append(month);
             month.clear();
             month.append(t);
             currentMonth = t.getDate().month();
         }
     }
     if (!month.isEmpty())
-        months.append(month);
+        m_months.append(month);
 
     // Create btn for each month and place them in a grid
-    QGridLayout* grid = new QGridLayout();
-    monthBtnsContainer->setLayout(grid);
+    QGridLayout* grid = new QGridLayout(m_monthBtnsContainer);
+    m_monthBtnsContainer->setLayout(grid);
 
-    for (int i = 0; i < months.count(); ++i) {
-        QString name = QString::number(months[i].at(0).getDate().month()) + "/" +
-                       QString::number(months[i].at(0).getDate().year());
-        QPushButton* btn = new QPushButton(name, monthBtnsContainer);
+    for (int i = 0; i < m_months.count(); ++i) {
+        QString name = QString::number(m_months[i].at(0).getDate().month()) + "/" +
+                       QString::number(m_months[i].at(0).getDate().year());
+        QPushButton* btn = new QPushButton(name, m_monthBtnsContainer);
+        btn->setProperty("active", false);
+        if(i == 0)
+        {
+            btn->setProperty("active", true);
+            graphGeneration(0);
+        }
         grid->addWidget(btn, i / 12, i % 12);
-        connect(btn, &QPushButton::clicked, [this, months, i]() {
-            graphGeneration(months[i]);
+        m_btns.append(btn);
+
+        connect(btn, &QPushButton::clicked, [this, i]() {
+            graphGeneration(i);
         });
     }
 
-    mainLayout->addWidget(monthBtnsContainer);
+    for(int i = 0; i < m_btns.count(); i++)
+    {
+        connect(m_btns[i], &QPushButton::clicked, [this, i]() {
+            ButtonUtility::connectUniqueToggleActiveProperty(m_btns, i);
+        });
+    }
+
+    // Update the btns container visualization
+    m_monthBtnsContainer->adjustSize();
+    layout()->invalidate();
 }
 
 void AnalysisPage::setBudgets(QSettings* settings)

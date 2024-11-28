@@ -25,8 +25,18 @@ public:
 private :
     QVector<Transaction> m_transactions;
     QMap<QString, float> m_budgets;
+    QWidget* m_monthBtnsContainer;
+    QBarSet* m_expenses;
+    QBarSet* m_budget;
+    QBarSeries* m_series;
+    QChart *m_chart = nullptr;
+    QBarCategoryAxis* m_axisX;
+    QValueAxis* m_axisY;
+    QChartView* m_chartView;
+    QVector<QVector<Transaction>> m_months;
+    QList<QPushButton*> m_btns;
 
-    void graphGeneration(QVector<Transaction> transactions);
+    void graphGeneration(int i);
 };
 
 #endif // ANALYSISPAGE_H
