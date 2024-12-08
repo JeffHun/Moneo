@@ -267,3 +267,21 @@ QTableView QTableCornerButton::section {
     font-family: Roboto Light;
     font-size: 15px;
 }
+
+#barChartView QLabel{
+    color: red;
+}
+
+#leftOverWidgetGreen
+{
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #1b9e16;
+}
+
+#leftOverWidgetRed
+{
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #9e2116;
+}

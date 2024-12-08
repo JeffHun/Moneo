@@ -35,8 +35,19 @@ private :
     QChartView* m_chartView;
     QVector<QVector<Transaction>> m_months;
     QList<QPushButton*> m_btns;
+    QHBoxLayout *m_graphLayout;
+    QBarSet* m_globalExpenses;
+    QBarSet* m_globalBudget;
+    QStackedBarSeries * m_globalSeries;
+    QChart* m_globalChart = nullptr;
+    QBarCategoryAxis* m_globalAxisX;
+    QValueAxis* m_globalAxisY;
+    QChartView* m_globalChartView;
+    QLabel* m_leftOverLabel;
+    QWidget *m_leftOverWidget;
 
     void graphGeneration(int i);
+    void globalGraphGeneration();
 };
 
 #endif // ANALYSISPAGE_H

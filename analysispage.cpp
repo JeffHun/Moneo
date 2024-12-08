@@ -1,5 +1,6 @@
 #include "analysispage.h"
 #include "buttonutility.h"
+#include "analysisstackedbarchart.h"
 
 #include <cmath>
 
@@ -13,32 +14,52 @@ AnalysisPage::AnalysisPage(QWidget* parent) : QWidget(parent){
     m_axisX = new QBarCategoryAxis();
     m_axisY = new QValueAxis();
 
+    m_globalAxisX = new QBarCategoryAxis();
+    m_globalAxisY = new QValueAxis();
+
     m_chart = new QChart();
+    m_chart->setBackgroundBrush(QBrush(QColor("#15131B")));
     m_chart->setAnimationOptions(QChart::SeriesAnimations);
 
+    m_globalChart = new QChart();
+
     m_chartView = new QChartView(m_chart, this);
+    m_chartView->setBackgroundBrush(QBrush(QColor("#15131B")));
     m_chartView->setRenderHint(QPainter::Antialiasing);
 
-    m_chart->setBackgroundBrush(Qt::NoBrush);
-    m_chart->setBackgroundPen(Qt::NoPen);
-    m_chart->setPlotAreaBackgroundBrush(Qt::NoBrush);
-    m_chart->setPlotAreaBackgroundVisible(false);
+    m_globalChartView = new QChartView(m_globalChart, this);
+    m_globalChartView->setMinimumWidth(600);
 
     layout->addWidget(m_monthBtnsContainer);
+
+    m_leftOverWidget = new QWidget(this);
+    m_leftOverWidget->setObjectName("leftOverWidgetRed");
+    QHBoxLayout* leftOverLayout = new QHBoxLayout(this);
+    m_leftOverWidget->setLayout(leftOverLayout);
+    m_leftOverLabel = new QLabel("?", m_leftOverWidget);
+    leftOverLayout->addWidget(m_leftOverLabel);
+    m_leftOverLabel->setObjectName("text");
+    m_leftOverLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    m_leftOverWidget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    layout->addWidget(m_leftOverWidget, 0, Qt::AlignHCenter);
+
     layout->addWidget(m_chartView);
     m_chartView->setChart(m_chart);
+
+    layout->addWidget(m_globalChartView);
+    m_globalChartView->setChart(m_globalChart);
+
+    QWidget *graphWidget = new QWidget(this);
+    m_graphLayout = new QHBoxLayout();
+    graphWidget->setLayout(m_graphLayout);
+
+    layout->addWidget(graphWidget);
+
 }
 
 void AnalysisPage::graphGeneration(int i)
 {
     QList<Transaction> transactions = m_months[i];
-
-    // Initialize the layout
-    QVBoxLayout* mainLayout = qobject_cast<QVBoxLayout*>(layout());
-    if (!mainLayout) {
-        mainLayout = new QVBoxLayout(this);
-        setLayout(mainLayout);
-    }
 
     // Clear existing series and axes
     m_chart->removeAllSeries();
@@ -47,10 +68,21 @@ void AnalysisPage::graphGeneration(int i)
         m_chart->removeAxis(axis);
     }
 
+    m_globalChart->removeAllSeries();
+    QList<QAbstractAxis*> globalAxes = m_globalChart->axes();
+    for (QAbstractAxis* axis : globalAxes) {
+        m_globalChart->removeAxis(axis);
+    }
+
     // Create new series and bar sets
     m_expenses = new QBarSet("Expenses");
     m_budget = new QBarSet("Budget");
+    m_chart->legend()->setLabelColor(QColor("#D9D9D9"));
+    m_chart->legend()->setAlignment(Qt::AlignLeft);
+
     m_series = new QBarSeries();
+
+    m_globalSeries = new QStackedBarSeries ();
 
     int max = 0;
     int incomesTotal = 0, inflowsTotal = 0, refundsTotal = 0, foodsTotal = 0, banksTotal = 0, educationsTotal = 0, taxesTotal = 0, legalsTotal = 0, housingsTotal = 0, leisuresTotal = 0, healthsTotal = 0, shoppingsTotal = 0, excludedsTotal = 0, transportsTotal = 0, outflowsTotal = 0, savingsTotal = 0;
@@ -214,16 +246,150 @@ void AnalysisPage::graphGeneration(int i)
 
     m_axisX = new QBarCategoryAxis();
     m_axisX->append(categories);
+    m_axisX->setLabelsBrush(QBrush(QColor("#D9D9D9")));
     m_chart->addAxis(m_axisX, Qt::AlignBottom);
     m_series->attachAxis(m_axisX);
 
     m_axisY = new QValueAxis();
     m_axisY->setRange(0, max);
+    m_axisY->setLabelsBrush(QBrush(QColor("#D9D9D9")));
     m_chart->addAxis(m_axisY, Qt::AlignLeft);
     m_series->attachAxis(m_axisY);
 
     m_chartView->setChart(m_chart);
     m_chartView->setRenderHint(QPainter::Antialiasing);
+    m_graphLayout->addWidget(m_chartView);
+
+    QBarSet *foodBar = new QBarSet("Food");
+    QBarSet *excludedBar = new QBarSet("Excluded");
+    QBarSet *leisureBar = new QBarSet("Leisure");
+    QBarSet *educationBar = new QBarSet("Education");
+    QBarSet *shoppingBar = new QBarSet("Shopping");
+    QBarSet *taxesBar = new QBarSet("Taxes");
+    QBarSet *transportBar = new QBarSet("Transport");
+    QBarSet *savingBar = new QBarSet("Saving");
+    QBarSet *outflowBar = new QBarSet("Outflow");
+    QBarSet *legalBar = new QBarSet("Legal");
+    QBarSet *bankBar = new QBarSet("Bank");
+    QBarSet *housingBar = new QBarSet("Housing");
+    QBarSet *healthBar = new QBarSet("Health");
+    QBarSet *refundBar = new QBarSet("Refund");
+    QBarSet *incomeBar = new QBarSet("Income");
+    QBarSet *inflowBar = new QBarSet("Inflow");
+
+    foodBar->setColor("#B35652");
+    excludedBar->setColor("#B3527C");
+    leisureBar->setColor("#B352AE");
+    educationBar->setColor("#7B52B3");
+    shoppingBar->setColor("#5254B3");
+    taxesBar->setColor("#527DB3");
+    transportBar->setColor("#52A6B3");
+    savingBar->setColor("#52B393");
+    outflowBar->setColor("#52B363");
+    legalBar->setColor("#71B352");
+    bankBar->setColor("#9EB352");
+    housingBar->setColor("#B3A752");
+    healthBar->setColor("#B38952");
+    refundBar->setColor("#535353");
+    incomeBar->setColor("#767676");
+    inflowBar->setColor("#A0A0A0");
+
+    *foodBar<<foodsTotal<<0;
+    *excludedBar<<excludedsTotal<<0;
+    *leisureBar<<leisuresTotal<<0;
+    *educationBar<<educationsTotal<<0;
+    *shoppingBar<<shoppingsTotal<<0;
+    *taxesBar<<taxesTotal<<0;
+    *transportBar<<transportsTotal<<0;
+    *savingBar<<savingsTotal<<0;
+    *outflowBar<<outflowsTotal<<0;
+    *legalBar<<legalsTotal<<0;
+    *bankBar<<banksTotal<<0;
+    *housingBar<<housingsTotal<<0;
+    *healthBar<<healthsTotal<<0;
+    *refundBar<<0<<refundsTotal;
+    *incomeBar<<0<<incomesTotal;
+    *inflowBar<<0<<inflowsTotal;
+
+    m_globalSeries->append(foodBar);
+    m_globalSeries->append(excludedBar);
+    m_globalSeries->append(leisureBar);
+    m_globalSeries->append(educationBar);
+    m_globalSeries->append(shoppingBar);
+    m_globalSeries->append(taxesBar);
+    m_globalSeries->append(transportBar);
+    m_globalSeries->append(savingBar);
+    m_globalSeries->append(outflowBar);
+    m_globalSeries->append(legalBar);
+    m_globalSeries->append(bankBar);
+    m_globalSeries->append(housingBar);
+    m_globalSeries->append(healthBar);
+    m_globalSeries->append(refundBar);
+    m_globalSeries->append(incomeBar);
+    m_globalSeries->append(inflowBar);
+
+    m_globalChart->addSeries(m_globalSeries);
+    m_globalChart->setAnimationOptions(QChart::SeriesAnimations);
+    m_globalChart->setBackgroundBrush(QBrush(QColor("#15131B")));
+
+    QStringList globalCategories = {"Expensed", "Earned"};
+    m_globalAxisX->append(globalCategories);
+    m_globalChart->legend()->setLabelColor(QColor("#D9D9D9"));
+    m_globalChart->legend()->setAlignment(Qt::AlignRight);
+    m_globalAxisX->setLabelsBrush(QBrush(QColor("#D9D9D9")));
+    m_globalChart->addAxis(m_globalAxisX, Qt::AlignBottom);
+    m_globalSeries->attachAxis(m_globalAxisX);
+
+    float globalMax = foodsTotal +
+                excludedsTotal +
+                leisuresTotal +
+                educationsTotal +
+                shoppingsTotal +
+                taxesTotal +
+                transportsTotal +
+                savingsTotal +
+                outflowsTotal +
+                legalsTotal +
+                banksTotal +
+                housingsTotal +
+                healthsTotal;
+
+    if(globalMax < (refundsTotal + incomesTotal + inflowsTotal))
+        globalMax = refundsTotal + incomesTotal + inflowsTotal;
+    m_globalAxisY->setRange(0, globalMax);
+    m_globalAxisY->setLabelsBrush(QBrush(QColor("#D9D9D9")));
+    m_globalChart->addAxis(m_globalAxisY, Qt::AlignLeft);
+
+    m_globalChartView->setRenderHint(QPainter::Antialiasing);
+    m_globalChartView->setBackgroundBrush(QBrush(QColor("#15131B")));
+
+    m_globalChartView->setChart(m_globalChart);
+    m_graphLayout->addWidget(m_globalChartView);
+
+    float leftOverValue = (foodsTotal +
+                           excludedsTotal +
+                           leisuresTotal +
+                           educationsTotal +
+                           shoppingsTotal +
+                           taxesTotal +
+                           transportsTotal +
+                           savingsTotal +
+                           outflowsTotal +
+                           legalsTotal +
+                           banksTotal +
+                           housingsTotal +
+                           healthsTotal) -
+                          (refundsTotal +
+                           incomesTotal +
+                           inflowsTotal);
+    m_leftOverLabel->setText(QString::number(leftOverValue));
+    if(leftOverValue >= 0)
+        m_leftOverWidget->setObjectName("leftOverWidgetGreen");
+    else
+        m_leftOverWidget->setObjectName("leftOverWidgetRed");
+
+    m_leftOverWidget->style()->unpolish(m_leftOverWidget);
+    m_leftOverWidget->style()->polish(m_leftOverWidget);
 }
 
 void AnalysisPage::headerGeneration()
