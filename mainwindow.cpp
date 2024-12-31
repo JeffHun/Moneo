@@ -5,7 +5,6 @@
 #include "transactionsPage.h"
 #include "budgetPage.h"
 #include "analysispage.h"
-#include "settingsPage.h"
 
 #include <QTableView>
 #include <QVBoxLayout>
@@ -72,14 +71,8 @@ void MainWindow::uiSetUp()
     createMenuButton(menu, btnLayout, "Budget", ":/resources/style/img/budget.png", &MainWindow::loadBudgetContent);
     btnLayout->addStretch();
     createMenuButton(menu, btnLayout, "Analysis", ":/resources/style/img/analysis.png", &MainWindow::loadAnalysisContent);
-    btnLayout->addStretch();
-    createMenuButton(menu, btnLayout, "Settings", ":/resources/style/img/setting.png", &MainWindow::loadSettingsContent);
-    menuLayout->addStretch();
 
-    // Add version label
-    QLabel* versionLbl = new QLabel("V 0.1", menu);
-    versionLbl->setObjectName("smallText");
-    menuLayout->addWidget(versionLbl);
+    menuLayout->addStretch();
 
     // Page creation and stacking
     QWidget* content = new QWidget(central);
@@ -90,7 +83,6 @@ void MainWindow::uiSetUp()
     m_stack->addWidget(new TransactionsPage(m_stack));
     m_stack->addWidget(new BudgetPage(m_stack));
     m_stack->addWidget(new AnalysisPage(m_stack));
-    m_stack->addWidget(new SettingsPage(m_stack));
 
     QVBoxLayout* contentLayout = new QVBoxLayout(content);
     contentLayout->addWidget(m_stack);
@@ -139,23 +131,28 @@ void MainWindow::loadBudgetContent()
 
 void MainWindow::loadAnalysisContent()
 {
-    m_stack->setCurrentIndex(3);
-    // Update budgets values when analysis page is load
-    BudgetPage *budgetPage = qobject_cast<BudgetPage*>(m_stack->widget(2));
-    if (budgetPage) {
-        budgetPage->setBudgetCategoryValues();
+    TransactionsPage *transactionPage = qobject_cast<TransactionsPage*>(m_stack->widget(1));
+    if(transactionPage->getNbrFile()>0)
+    {
+        m_stack->setCurrentIndex(3);
+        // Update budgets values when analysis page is load
+        BudgetPage *budgetPage = qobject_cast<BudgetPage*>(m_stack->widget(2));
+        if (budgetPage) {
+            budgetPage->setBudgetCategoryValues();
+        }
+
+        AnalysisPage *analysisPage = qobject_cast<AnalysisPage*>(m_stack->widget(3));
+        TransactionsPage *transactionsPage = qobject_cast<TransactionsPage*>(m_stack->widget(1));
+        analysisPage->setTransactions(transactionsPage->getTransactions());
+        analysisPage->setBudgets(budgetPage->getSettings());
+        analysisPage->headerGeneration();
     }
-
-    AnalysisPage *analysisPage = qobject_cast<AnalysisPage*>(m_stack->widget(3));
-    TransactionsPage *transactionsPage = qobject_cast<TransactionsPage*>(m_stack->widget(1));
-    analysisPage->setTransactions(transactionsPage->getTransactions());
-    analysisPage->setBudgets(budgetPage->getSettings());
-    analysisPage->headerGeneration();
-}
-
-void MainWindow::loadSettingsContent()
-{
-    m_stack->setCurrentIndex(4);
+    else
+    {
+        QMessageBox messageBox;
+        messageBox.setFixedSize(500,200);
+        messageBox.critical(0,"Error", "There is no file to analyse");
+    }
 }
 
 void MainWindow::setButtonState(QPushButton* button, bool state) {

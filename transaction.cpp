@@ -11,20 +11,20 @@ const QString DEBIT_COLUMN = "Debit";
 const QString CREDIT_COLUMN = "Credit";
 
 QStringList Transaction::m_allowedCategories = {"Food",
-                                              "Bank and insurance",
-                                              "Education and Family",
-                                              "Taxes and duties",
-                                              "Legal and Administrative",
-                                              "Housing and home",
-                                              "Leisure and vacations",
+                                              "Bank",
+                                              "Education",
+                                              "Taxes",
+                                              "Legal",
+                                              "Housing",
+                                              "Leisure",
                                               "Health",
-                                              "Shopping and services",
-                                              "Excluded and transaction",
+                                              "Shopping",
+                                              "Excluded",
                                               "Transports",
-                                              "Outflow of money",
+                                              "Outflow",
                                               "Saving",
-                                              "Income and earnings",
-                                              "Inflow of money",
+                                              "Income",
+                                              "Inflow",
                                               "Refund",
                                               "Other"};
 
@@ -113,6 +113,19 @@ QList<Transaction> transactionGenerator(const QString& filePath) {
             continue;
         }
 
+        if (amount > 0 && (category == "Food" || category == "Bank" ||
+            category == "Education" || category == "Saving" ||
+            category == "Taxes" || category == "Legal" ||
+            category == "Housing" || category == "Leisure" ||
+            category == "Health" || category == "Shopping" ||
+            category == "Excluded" || category == "Transports" ||
+                           category == "Outflow"))
+        {
+          category = "Refund";
+        }
+
+        qDebug()<<amount;
+
         // Create new Transaction and add it to transactions list
         transactions.append(Transaction(date, description, amount, category));
     }
@@ -125,20 +138,20 @@ QString Transaction::convertFRtoENCategories(const QString& FRcategory)
 {
     static const QMap<QString, QString> categoryMap = {
         {"Alimentation", "Food"},
-        {"Banque et assurances", "Bank and insurance"},
-        {"Education et famille", "Education and family"},
+        {"Banque et assurances", "Bank"},
+        {"Education et famille", "Education"},
         {"Epargne", "Saving"},
-        {"Impots et taxes", "Taxes and duties"},
-        {"Juridique et administratif", "Legal and administrative"},
-        {"Logement - maison", "Housing and home"},
-        {"Loisirs et vacances", "Leisure and vacations"},
-        {"Revenus et rentrees d'argent", "Income and earnings"},
+        {"Impots et taxes", "Taxes"},
+        {"Juridique et administratif", "Legal"},
+        {"Logement - maison", "Housing"},
+        {"Loisirs et vacances", "Leisure"},
+        {"Revenus et rentrees d'argent", "Income"},
         {"Sante", "Health"},
-        {"Shopping et services", "Shopping and services"},
-        {"Transaction exclue", "Excluded and transaction"},
+        {"Shopping et services", "Shopping"},
+        {"Transaction exclue", "Excluded"},
         {"Transports", "Transports"},
-        {"A categoriser - sortie d'argent", "Outflow of money"},
-        {"A categoriser - rentree d'argent", "Inflow of money"}
+        {"A categoriser - sortie d'argent", "Outflow"},
+        {"A categoriser - rentree d'argent", "Inflow"}
     };
 
     return categoryMap.value(FRcategory, "Other");

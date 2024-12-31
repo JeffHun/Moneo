@@ -16,11 +16,11 @@ SOURCES += \
     filedropzone.cpp \
     main.cpp \
     mainwindow.cpp \
-    settingspage.cpp \
     transaction.cpp \
     transactiondelegate.cpp \
     transactionmodel.cpp \
     transactionspage.cpp \
+    transactionswindow.cpp \
     welcomepage.cpp
 
 HEADERS += \
@@ -30,11 +30,11 @@ HEADERS += \
     buttonutility.h \
     filedropzone.h \
     mainwindow.h \
-    settingspage.h \
     transaction.h \
     transactiondelegate.h \
     transactionmodel.h \
     transactionspage.h \
+    transactionswindow.h \
     welcomepage.h
 
 FORMS += \

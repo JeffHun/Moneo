@@ -28,10 +28,10 @@ private :
     QWidget* m_monthBtnsContainer;
     QBarSet* m_expenses;
     QBarSet* m_budget;
-    QBarSeries* m_series;
+    QHorizontalBarSeries* m_series;
     QChart *m_chart = nullptr;
-    QBarCategoryAxis* m_axisX;
-    QValueAxis* m_axisY;
+    QValueAxis* m_axisX;
+    QBarCategoryAxis* m_axisY;
     QChartView* m_chartView;
     QVector<QVector<Transaction>> m_months;
     QList<QPushButton*> m_btns;
@@ -45,9 +45,14 @@ private :
     QChartView* m_globalChartView;
     QLabel* m_leftOverLabel;
     QWidget *m_leftOverWidget;
+    int m_monthIdx;
 
-    void graphGeneration(int i);
     void globalGraphGeneration();
+    void budgetGraph();
+    void globalGraph();
+    void categoryBtnsGeneration();
+    void createCategoryButton(QWidget*,QVBoxLayout*, const QString&, const QString&, const QString&);
+    void showTransactionsCategory(const QString&);
 };
 
 #endif // ANALYSISPAGE_H

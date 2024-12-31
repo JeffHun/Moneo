@@ -26,6 +26,7 @@ public:
     explicit TransactionsPage(QWidget* parent = nullptr);
     ~TransactionsPage();
     QVector<Transaction> getTransactions();
+    int getNbrFile();
 
 private:
     QTableView* m_transactionsView;
@@ -38,6 +39,7 @@ private:
     QVBoxLayout* m_balanceContainerLayout;
     QWidget* m_monthBtnsContainer;
     QGridLayout* m_gridLayout;
+    FileDropZone* m_dropZone;
 
     void loadTransactionsFromFilesAndSetupModel(QList<QFile*> files);
     void resetModel();

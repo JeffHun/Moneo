@@ -108,6 +108,11 @@ void FileDropZone::browseFile()
     }
 }
 
+int FileDropZone::getFileNbr()
+{
+    return m_files.count();
+}
+
 void FileDropZone::addFile(QFile* aFile)
 {
     fileContainer->show();

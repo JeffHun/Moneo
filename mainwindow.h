@@ -31,7 +31,6 @@ private:
     void loadWelcomeContent();
     void loadBudgetContent();
     void loadAnalysisContent();
-    void loadSettingsContent();
 
     void createMenuButton(QWidget*,QVBoxLayout*, const QString&, const QString& path, void (MainWindow::*slot)());
     void moveToPrimaryScreen();

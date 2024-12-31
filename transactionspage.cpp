@@ -26,16 +26,16 @@ void TransactionsPage::setupUI()
     title->setAlignment(Qt::AlignCenter);
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->addWidget(title);
-    FileDropZone* dropZone = new FileDropZone(this);
-    layout->addWidget(dropZone, 0, Qt::AlignCenter);
+    m_dropZone = new FileDropZone(this);
+    layout->addWidget(m_dropZone, 0, Qt::AlignCenter);
 
     QPushButton* proceedFilesBtn = new QPushButton("Process file(s)" ,this);
     layout->addWidget(proceedFilesBtn, 0, Qt::AlignCenter);
     ButtonUtility::connectButton(proceedFilesBtn);
 
     // Hide or show view if there is data to process
-    connect(proceedFilesBtn, &QPushButton::clicked, this, [this, dropZone]() {
-        if(dropZone->getFiles().isEmpty())
+    connect(proceedFilesBtn, &QPushButton::clicked, this, [this]() {
+        if(m_dropZone->getFiles().isEmpty())
         {
             QMessageBox messageBox;
             messageBox.setFixedSize(500,200);
@@ -43,11 +43,16 @@ void TransactionsPage::setupUI()
         }
         else
         {
-            loadTransactionsFromFilesAndSetupModel(dropZone->getFiles());
+            loadTransactionsFromFilesAndSetupModel(m_dropZone->getFiles());
             m_transactionsView->show();
         }
 
     });
+}
+
+int TransactionsPage::getNbrFile()
+{
+    return m_dropZone->getFileNbr();
 }
 
 void TransactionsPage::setupTableView()

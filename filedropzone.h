@@ -17,6 +17,7 @@ class FileDropZone : public QWidget{
 public:
     FileDropZone(QWidget* parent = nullptr);
     QList<QFile*> getFiles();
+    int getFileNbr();
     ~FileDropZone();
 
 protected:
